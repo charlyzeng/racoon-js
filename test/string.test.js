@@ -38,6 +38,17 @@ describe('`string` function test', () => {
     expect(() => schema.validate('12.a')).to.throw('value should match pattern');
   });
 
+  it('`required` should restrict data is required', () => {
+    const schema = racoon.string().required();
+    expect(schema.validate('test')).to.eq('test');
+    expect(() => schema.validate()).to.throw('value is required and should not be undefined/null');
+    expect(() => schema.validate(undefined)).to.throw('value is required and should not be undefined/null');
+    expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null');
+
+    const schema2 = racoon.string().required(true);
+    expect(() => schema2.validate('')).to.throw('value is required and should not be empty');
+  });
+
   it('`custom` should restrict by user custom function', () => {
     const schema = racoon.string().custom((val) => {
       if (val.startsWith('ab')) {
