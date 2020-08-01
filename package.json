@@ -1,0 +1,33 @@
+{
+  "name": "js-racoon",
+  "version": "0.0.1",
+  "description": "Little raccoon who loves washing hands, means this is a tiny tool lib for checking and cleaning json data.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "npx mocha --require @babel/register --bail test/**/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charlyzeng/js-racoon.git"
+  },
+  "keywords": [
+    "check",
+    "validate",
+    "json",
+    "data",
+    "check",
+    "json",
+    "check",
+    "data",
+    "validate",
+    "json",
+    "validate",
+    "data"
+  ],
+  "author": "charlyzeng <chenglezeng@tencent.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/charlyzeng/js-racoon/issues"
+  },
+  "homepage": "https://github.com/charlyzeng/js-racoon#readme"
+}
