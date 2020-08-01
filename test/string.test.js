@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import { expect } from 'chai';
 import racoon from '../lib';
 
@@ -6,6 +7,30 @@ describe('`string` function test', () => {
     const schema = racoon.string();
     expect(schema.validate('abc')).to.eq('abc');
     expect(() => schema.validate(1)).to.throw('value should be typeof string');
+  });
+
+  it('`default` should make a default return when value is undefined/null/[EmptyString]', () => {
+    const schema = racoon.string().default('default string');
+    expect(schema.validate()).to.eq('default string');
+    expect(schema.validate(undefined)).to.eq('default string');
+    expect(schema.validate(null)).to.eq('default string');
+    expect(schema.validate('')).to.eq('');
+    expect(schema.validate('other string')).to.eq('other string');
+
+    const schema2 = racoon.string().default('default string', true);
+    expect(schema2.validate()).to.eq('default string');
+    expect(schema2.validate(undefined)).to.eq('default string');
+    expect(schema2.validate(null)).to.eq('default string');
+    expect(schema2.validate('')).to.eq('default string');
+    expect(schema2.validate('other string')).to.eq('other string');
+
+    let couter = 0;
+    const schema3 = racoon.string().default((val) => `${val}:${++couter}`, true);
+    expect(schema3.validate()).to.eq('undefined:1');
+    expect(schema3.validate(undefined)).to.eq('undefined:2');
+    expect(schema3.validate(null)).to.eq('null:3');
+    expect(schema3.validate('')).to.eq(':4');
+    expect(schema3.validate('other string')).to.eq('other string');
   });
 
   it('`min` restrict the min length of string', () => {

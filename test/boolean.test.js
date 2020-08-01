@@ -9,6 +9,15 @@ describe('`boolean` function test', () => {
     expect(() => schema.validate(1)).to.throw('value should be typeof boolean');
   });
 
+  it('`default` should make a default return when value is undefined/null', () => {
+    const schema = racoon.boolean().default(true);
+    expect(schema.validate()).to.be.true;
+    expect(schema.validate(undefined)).to.be.true;
+    expect(schema.validate(null)).to.be.true;
+    expect(schema.validate(false)).to.be.false;
+    expect(schema.validate(true)).to.be.true;
+  });
+
   it('`custom` should restrict by user custom function', () => {
     const schema = racoon.boolean().custom((val) => {
       if (val === false) {

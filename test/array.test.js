@@ -10,6 +10,23 @@ describe('`array` function test', () => {
     expect(() => schema.validate(1)).to.throw('value should be typeof array');
   });
 
+  it('`default` should make a default return when value is undefined/null/empty', () => {
+    const schema = racoon.array().default(() => [1, 2]);
+    expect(schema.validate()).to.deep.eq([1, 2]);
+    expect(schema.validate(undefined)).to.deep.eq([1, 2]);
+    expect(schema.validate(null)).to.deep.eq([1, 2]);
+    expect(() => schema.validate(NaN)).to.throw('value should be typeof array');
+    expect(schema.validate([])).to.deep.eq([]);
+    expect(schema.validate([1, 2, 3])).to.deep.eq([1, 2, 3]);
+
+    const schema2 = racoon.array().default(() => ([1, 2]), true);
+    expect(schema2.validate()).to.deep.eq([1, 2]);
+    expect(schema2.validate(undefined)).to.deep.eq([1, 2]);
+    expect(schema2.validate(null)).to.deep.eq([1, 2]);
+    expect(schema2.validate([])).to.deep.eq([1, 2]);
+    expect(schema2.validate([1, 2, 3])).to.deep.eq([1, 2, 3]);
+  });
+
   it('`min` should restrict the min length of array', () => {
     const schema = racoon.array().min(3);
     expect(schema.validate([1, 2, 3])).to.deep.eq([1, 2, 3]);

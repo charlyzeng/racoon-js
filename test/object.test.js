@@ -16,6 +16,23 @@ describe('`object` function test', () => {
     ).to.throw('value should be typeof object');
   });
 
+  it('`default` should make a default return when value is undefined/null/empty', () => {
+    const schema = racoon.object().default(() => ({ a: 1 }));
+    expect(schema.validate()).to.deep.eq({ a: 1 });
+    expect(schema.validate(undefined)).to.deep.eq({ a: 1 });
+    expect(schema.validate(null)).to.deep.eq({ a: 1 });
+    expect(() => schema.validate(NaN)).to.throw('value should be typeof object');
+    expect(schema.validate({})).to.deep.eq({});
+    expect(schema.validate({ a: 2 })).to.deep.eq({ a: 2 });
+
+    const schema2 = racoon.object().default(() => ({ a: 1 }), true);
+    expect(schema2.validate()).to.deep.eq({ a: 1 });
+    expect(schema2.validate(undefined)).to.deep.eq({ a: 1 });
+    expect(schema2.validate(null)).to.deep.eq({ a: 1 });
+    expect(schema2.validate({})).to.deep.eq({ a: 1 });
+    expect(schema2.validate({ a: 2 })).to.deep.eq({ a: 2 });
+  });
+
   it('`required` should restrict data is required', () => {
     const schema = racoon.object().required();
     expect(schema.validate({})).to.deep.eq({});
