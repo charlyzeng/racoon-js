@@ -29,5 +29,16 @@
   "bugs": {
     "url": "https://github.com/charlyzeng/js-racoon/issues"
   },
-  "homepage": "https://github.com/charlyzeng/js-racoon#readme"
+  "homepage": "https://github.com/charlyzeng/js-racoon#readme",
+  "devDependencies": {
+    "@babel/core": "^7.10.5",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/register": "^7.10.5",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.4.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0"
+  }
 }
