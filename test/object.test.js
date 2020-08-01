@@ -26,150 +26,150 @@ describe('`object` function test', () => {
     expect(schema2.validate({ a: 1 })).to.deep.eq({ a: 1 });
   });
 
-  // it('scene the contains unknown field', () => {
-  //   const schema = racoon.object({
-  //     name: racoon.string().required(),
-  //     age: racoon.number().int().min(1).max(99)
-  //   }).stripUnknown().required();
-  //   const data = {
-  //     name: 'Tom',
-  //     age: null,
-  //     gender: 'this is a unknown field'
-  //   };
-  //   const dataClone = JSON.parse(JSON.stringify(data));
-  //   expect(schema.validate(data)).to.deep.eq({ name: 'Tom', age: null });
+  it('scene the contains unknown field', () => {
+    const schema = racoon.object({
+      name: racoon.string().required(),
+      age: racoon.number().int().min(1).max(99)
+    }).stripUnknown().required();
+    const data = {
+      name: 'Tom',
+      age: null,
+      gender: 'this is a unknown field'
+    };
+    const dataClone = JSON.parse(JSON.stringify(data));
+    expect(schema.validate(data)).to.deep.eq({ name: 'Tom', age: null });
 
-  //   const schema2 = racoon.object({
-  //     name: racoon.string().required(),
-  //     age: racoon.number().int().min(1).max(99)
-  //   }).allowUnknown().required();
-  //   expect(schema2.validate(data)).to.deep.eq(dataClone);
+    const schema2 = racoon.object({
+      name: racoon.string().required(),
+      age: racoon.number().int().min(1).max(99)
+    }).allowUnknown().required();
+    expect(schema2.validate(data)).to.deep.eq(dataClone);
 
-  //   const schema3 = racoon.object({
-  //     name: racoon.string().required(),
-  //     age: racoon.number().int().min(1).max(99)
-  //   }).required();
-  //   expect(() => schema3.validate(data)).to.throw('the key `gender` is not allowed');
+    const schema3 = racoon.object({
+      name: racoon.string().required(),
+      age: racoon.number().int().min(1).max(99)
+    }).required();
+    expect(() => schema3.validate(data)).to.throw('the key `gender` is not allowed');
 
-  //   const schema4 = racoon.object({
-  //     name: racoon.string().required(),
-  //     age: racoon.number().int().min(1).max(99),
-  //     cars: racoon.array().items(
-  //       racoon.object({
-  //         price: racoon.number().min(0).required(),
-  //         brand: racoon.object({
-  //           year: racoon.number().int().required()
-  //         })
-  //       })
-  //     ),
-  //     book: racoon.object({
-  //       title: racoon.string().required()
-  //     })
-  //   }).required();
-  //   expect(
-  //     schema4.validate({
-  //       name: 'Tom',
-  //       age: undefined,
-  //       cars: [
-  //         {
-  //           price: 120000,
-  //           brand: {
-  //             year: 1992
-  //           }
-  //         }
-  //       ],
-  //       book: {
-  //         title: 'War And Peace'
-  //       }
-  //     })
-  //   ).to.deep.eq({
-  //     name: 'Tom',
-  //     age: undefined,
-  //     cars: [
-  //       {
-  //         price: 120000,
-  //         brand: {
-  //           year: 1992
-  //         }
-  //       }
-  //     ],
-  //     book: {
-  //       title: 'War And Peace'
-  //     }
-  //   });
+    const schema4 = racoon.object({
+      name: racoon.string().required(),
+      age: racoon.number().int().min(1).max(99),
+      cars: racoon.array().items(
+        racoon.object({
+          price: racoon.number().min(0).required(),
+          brand: racoon.object({
+            year: racoon.number().int().required()
+          })
+        })
+      ),
+      book: racoon.object({
+        title: racoon.string().required()
+      })
+    }).required();
+    expect(
+      schema4.validate({
+        name: 'Tom',
+        age: undefined,
+        cars: [
+          {
+            price: 120000,
+            brand: {
+              year: 1992
+            }
+          }
+        ],
+        book: {
+          title: 'War And Peace'
+        }
+      })
+    ).to.deep.eq({
+      name: 'Tom',
+      age: undefined,
+      cars: [
+        {
+          price: 120000,
+          brand: {
+            year: 1992
+          }
+        }
+      ],
+      book: {
+        title: 'War And Peace'
+      }
+    });
 
-  //   expect(
-  //     () => schema4.validate({
-  //       name: 'Tom',
-  //       age: undefined,
-  //       cars: [
-  //         {
-  //           price: 120000,
-  //           brand: {
-  //             year: 1992,
-  //             name: 'this is a unknown field'
-  //           }
-  //         }
-  //       ],
-  //       book: {
-  //         title: 'War And Peace'
-  //       }
-  //     })
-  //   ).to.throw('"cars[0].brand": the key `name` is not allowed');
+    expect(
+      () => schema4.validate({
+        name: 'Tom',
+        age: undefined,
+        cars: [
+          {
+            price: 120000,
+            brand: {
+              year: 1992,
+              name: 'this is a unknown field'
+            }
+          }
+        ],
+        book: {
+          title: 'War And Peace'
+        }
+      })
+    ).to.throw('"cars[0].brand": the key `name` is not allowed');
 
-  //   expect(
-  //     () => schema4.validate({
-  //       name: 'Tom',
-  //       age: undefined,
-  //       cars: [
-  //         {
-  //           price: 120000,
-  //           brand: {
-  //             year: 1992
-  //           }
-  //         }
-  //       ],
-  //       book: {
-  //         title: 'War And Peace',
-  //         author: 'Lev Nikolayevich Tolstoy'
-  //       }
-  //     })
-  //   ).to.throw('"book": the key `author` is not allowed');
+    expect(
+      () => schema4.validate({
+        name: 'Tom',
+        age: undefined,
+        cars: [
+          {
+            price: 120000,
+            brand: {
+              year: 1992
+            }
+          }
+        ],
+        book: {
+          title: 'War And Peace',
+          author: 'Lev Nikolayevich Tolstoy'
+        }
+      })
+    ).to.throw('"book": the key `author` is not allowed');
 
-  //   const schema5 = racoon.object({
-  //     name: racoon.string().required(),
-  //     age: racoon.number().int().min(1).max(99),
-  //     cars: racoon.array().items(
-  //       racoon.object({
-  //         price: racoon.number().min(0).required(),
-  //         'prop.with.dot': racoon.object({
-  //           year: racoon.number().int().required()
-  //         })
-  //       })
-  //     ),
-  //     book: racoon.object({
-  //       title: racoon.string().required()
-  //     })
-  //   }).required();
-  //   expect(
-  //     () => schema5.validate({
-  //       name: 'Tom',
-  //       age: undefined,
-  //       cars: [
-  //         {
-  //           price: 120000,
-  //           'prop.with.dot': {
-  //             year: 1992,
-  //             name: 'this is a unknown field'
-  //           }
-  //         }
-  //       ],
-  //       book: {
-  //         title: 'War And Peace'
-  //       }
-  //     })
-  //   ).to.throw('"cars[0][\'prop.with.dot\']": the key `name` is not allowed');
-  // });
+    const schema5 = racoon.object({
+      name: racoon.string().required(),
+      age: racoon.number().int().min(1).max(99),
+      cars: racoon.array().items(
+        racoon.object({
+          price: racoon.number().min(0).required(),
+          'prop.with.dot': racoon.object({
+            year: racoon.number().int().required()
+          })
+        })
+      ),
+      book: racoon.object({
+        title: racoon.string().required()
+      })
+    }).required();
+    expect(
+      () => schema5.validate({
+        name: 'Tom',
+        age: undefined,
+        cars: [
+          {
+            price: 120000,
+            'prop.with.dot': {
+              year: 1992,
+              name: 'this is a unknown field'
+            }
+          }
+        ],
+        book: {
+          title: 'War And Peace'
+        }
+      })
+    ).to.throw('"cars[0][\'prop.with.dot\']": the key `name` is not allowed');
+  });
 
   it('complex scene 1', () => {
     const schema = racoon.object({
