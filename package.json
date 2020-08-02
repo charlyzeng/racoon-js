@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/charlyzeng/js-racoon.git"
+    "url": "git+https://github.com/charlyzeng/racoon-js.git"
   },
   "keywords": [
     "check",
@@ -27,9 +27,9 @@
   "author": "charlyzeng <chenglezeng@tencent.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/charlyzeng/js-racoon/issues"
+    "url": "https://github.com/charlyzeng/racoon-js/issues"
   },
-  "homepage": "https://github.com/charlyzeng/js-racoon#readme",
+  "homepage": "https://github.com/charlyzeng/racoon-js#readme",
   "devDependencies": {
     "@babel/core": "^7.10.5",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
