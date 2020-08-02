@@ -1,5 +1,5 @@
 {
-  "name": "js-racoon",
+  "name": "racoon-js",
   "version": "0.0.1",
   "description": "Little raccoon who loves washing hands, means this is a tiny tool lib for checking and cleaning json data.",
   "main": "lib/index.js",
