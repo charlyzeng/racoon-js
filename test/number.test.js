@@ -5,6 +5,7 @@ describe('`number` function test', () => {
   it('should restrict the basic type', () => {
     const schema = racoon.number();
     expect(schema.validate(0.1)).to.eq(0.1);
+    expect(() => schema.validate(NaN)).to.throw('value is not allowed to be NaN');
     expect(() => schema.validate('abc')).to.throw('value should be typeof number');
   });
 
@@ -59,6 +60,7 @@ describe('`number` function test', () => {
     expect(schema.validate(-1)).to.eq(-1);
     expect(schema.validate(-0)).to.eq(0);
     expect(schema.validate(2.0)).to.eq(2);
+    expect(() => schema.validate(NaN)).to.throws('value is not allowed to be NaN');
     expect(() => schema.validate(2.01)).to.throw('value should be an int');
   });
 
