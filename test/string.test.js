@@ -33,6 +33,24 @@ describe('`string` function test', () => {
     expect(schema3.validate('other string')).to.eq('other string');
   });
 
+  it('`format` should set return value formatter', () => {
+    const schema = racoon.string().format(str => `#${str}`);
+    expect(schema.validate('str')).to.be.eq('#str');
+    expect(schema.validate()).to.be.eq('#undefined');
+    expect(schema.validate(undefined)).to.be.eq('#undefined');
+    expect(schema.validate(null)).to.be.eq('#null');
+
+    const schema2 = racoon.string().default('default str').format(str => `#${str}`);
+    expect(schema2.validate('str')).to.be.eq('#str');
+    expect(schema2.validate()).to.be.eq('#default str');
+    expect(schema2.validate(undefined)).to.be.eq('#default str');
+    expect(schema2.validate(null)).to.be.eq('#default str');
+    expect(schema2.validate('')).to.be.eq('#');
+
+    const schema3 = racoon.string().default('default str', true).format(str => `#${str}`);
+    expect(schema3.validate('')).to.be.eq('#default str');
+  });
+
   it('`min` restrict the min length of string', () => {
     const schema = racoon.string().min(3);
     expect(schema.validate('abc')).to.eq('abc');

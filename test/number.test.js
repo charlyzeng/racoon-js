@@ -90,6 +90,26 @@ describe('`number` function test', () => {
     expect(schema.validate(0)).to.eq(0);
   });
 
+  it('`format` should set return value formatter', () => {
+    const schema = racoon.number().format(num => num * 2);
+    expect(schema.validate(1)).to.be.eq(2);
+    expect(schema.validate(3)).to.be.eq(6);
+    expect(schema.validate(undefined)).to.be.NaN;
+
+    const schema2 = racoon.number().default(5).format(num => num * 2);
+    expect(schema2.validate(1)).to.be.eq(2);
+    expect(schema2.validate(3)).to.be.eq(6);
+    expect(schema2.validate()).to.be.eq(10);
+    expect(schema2.validate(undefined)).to.be.eq(10);
+    expect(schema2.validate(null)).to.be.eq(10);
+    expect(() => schema2.validate(NaN)).to.throw('value is not allowed to be NaN');
+
+    const schema3 = racoon.number().allowNaN().default(5).format(num => num * 2);
+    expect(schema3.validate(undefined)).to.be.eq(10);
+    expect(schema3.validate(null)).to.be.eq(10);
+    expect(schema3.validate(NaN)).to.be.eq(10);
+  });
+
   it('complex scene 1', () => {
     const schema = racoon.number().min(-1).max(1, false).required();
     expect(schema.validate(-1)).to.eq(-1);

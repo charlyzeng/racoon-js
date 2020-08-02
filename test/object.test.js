@@ -33,6 +33,20 @@ describe('`object` function test', () => {
     expect(schema2.validate({ a: 2 })).to.deep.eq({ a: 2 });
   });
 
+  it('`format` should set return value formatter', () => {
+    const schema = racoon.object().default({ c: 'c' }).format(value => ({ code: 100, value }));
+    expect(schema.validate({ a: 1, b: 2 })).to.deep.eq({ code: 100, value: { a: 1, b: 2 } });
+    expect(schema.validate(undefined)).to.deep.eq({ code: 100, value: { c: 'c' } });
+    expect(schema.validate(null)).to.deep.eq({ code: 100, value: { c: 'c' } });
+    expect(schema.validate({})).to.deep.eq({ code: 100, value: {} });
+
+    const schema2 = racoon.object().default({ c: 'c' }, true).format(value => ({ code: 100, value }));
+    expect(schema2.validate({ a: 1, b: 2 })).to.deep.eq({ code: 100, value: { a: 1, b: 2 } });
+    expect(schema2.validate(undefined)).to.deep.eq({ code: 100, value: { c: 'c' } });
+    expect(schema2.validate(null)).to.deep.eq({ code: 100, value: { c: 'c' } });
+    expect(schema2.validate({})).to.deep.eq({ code: 100, value: { c: 'c' } });
+  });
+
   it('`required` should restrict data is required', () => {
     const schema = racoon.object().required();
     expect(schema.validate({})).to.deep.eq({});

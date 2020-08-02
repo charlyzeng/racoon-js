@@ -27,6 +27,20 @@ describe('`array` function test', () => {
     expect(schema2.validate([1, 2, 3])).to.deep.eq([1, 2, 3]);
   });
 
+  it('`format` should set return value formatter', () => {
+    const schema = racoon.array().default([1, 2]).format(value => ({ code: 100, value }));
+    expect(schema.validate([1])).to.deep.eq({ code: 100, value: [1] });
+    expect(schema.validate(undefined)).to.deep.eq({ code: 100, value: [1, 2] });
+    expect(schema.validate(null)).to.deep.eq({ code: 100, value: [1, 2] });
+    expect(schema.validate([])).to.deep.eq({ code: 100, value: [] });
+
+    const schema2 = racoon.array().default([1, 2], true).format(value => ({ code: 100, value }));
+    expect(schema2.validate([1])).to.deep.eq({ code: 100, value: [1] });
+    expect(schema2.validate(undefined)).to.deep.eq({ code: 100, value: [1, 2] });
+    expect(schema2.validate(null)).to.deep.eq({ code: 100, value: [1, 2] });
+    expect(schema2.validate([])).to.deep.eq({ code: 100, value: [1, 2] });
+  });
+
   it('`min` should restrict the min length of array', () => {
     const schema = racoon.array().min(3);
     expect(schema.validate([1, 2, 3])).to.deep.eq([1, 2, 3]);
