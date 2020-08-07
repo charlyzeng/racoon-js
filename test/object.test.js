@@ -85,7 +85,7 @@ describe('`object` function test', () => {
     const schema4 = racoon.object({
       name: racoon.string().required(),
       age: racoon.number().int().min(1).max(99),
-      cars: racoon.array().items(
+      cars: racoon.array(
         racoon.object({
           price: racoon.number().min(0).required(),
           brand: racoon.object({
@@ -170,7 +170,7 @@ describe('`object` function test', () => {
     const schema5 = racoon.object({
       name: racoon.string().required(),
       age: racoon.number().int().min(1).max(99),
-      cars: racoon.array().items(
+      cars: racoon.array(
         racoon.object({
           price: racoon.number().min(0).required(),
           'prop.with.dot': racoon.object({
@@ -274,11 +274,11 @@ describe('`object` function test', () => {
 
   it('complex scene 3', () => {
     const schema = racoon.object({
-      prop1: racoon.array().items(
+      prop1: racoon.array(
         racoon.object({
           prop2: racoon.object({
-            prop3: racoon.array().items(
-              racoon.array().items(
+            prop3: racoon.array(
+              racoon.array(
                 racoon.object({
                   prop4: racoon
                     .number()

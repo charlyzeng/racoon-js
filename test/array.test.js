@@ -87,7 +87,7 @@ describe('`array` function test', () => {
   });
 
   it('`items` should restrict the type of array item', () => {
-    const schema = racoon.array().items(
+    const schema = racoon.array(
       racoon.number().int().min(1).max(6, false)
     );
     expect(schema.validate([1, 2, 3, 4, 5])).to.deep.eq([1, 2, 3, 4, 5]);
@@ -95,11 +95,11 @@ describe('`array` function test', () => {
       () => schema.validate([1, 2, 3, 4, 5, 6])
     ).to.throw('"[5]": value should less than 6');
 
-    const schema2 = racoon.array().items(
+    const schema2 = racoon.array(
       racoon.object({
         name: racoon.string().min(3).max(5).required(),
         age: racoon.number().int().min(1).max(199),
-        friends: racoon.array().items(
+        friends: racoon.array(
           racoon.object({
             gender: racoon.boolean().required(),
             age: racoon.number().max(199)
