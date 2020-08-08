@@ -80,6 +80,23 @@ describe('`string` function test', () => {
     expect(schema2.validate('abcd')).to.eq('abcd');
   });
 
+  it('`min` restrict the min length of string and accept custom error', () => {
+    const schema1 = racoon.string().min(3, 'custom error 1');
+    expect(schema1.validate('abc')).to.eq('abc');
+    expect(schema1.validate('abcd')).to.eq('abcd');
+    expect(() => schema1.validate('ab')).to.throw(/^custom error 1$/);
+
+    const schema2 = racoon.string().min(3, true, 'custom error 2');
+    expect(schema2.validate('abc')).to.eq('abc');
+    expect(schema2.validate('abcd')).to.eq('abcd');
+    expect(() => schema2.validate('ab')).to.throw(/^custom error 2$/);
+
+    const schema3 = racoon.string().min(3, false, 'custom error 3');
+    expect(schema3.validate('abcd')).to.eq('abcd');
+    expect(() => schema3.validate('abc')).to.throw(/^custom error 3$/);
+    expect(() => schema3.validate('ab')).to.throw(/^custom error 3$/);
+  });
+
   it('`max` restrict the max length of string', () => {
     const schema = racoon.string().max(3);
     expect(schema.validate('abc')).to.eq('abc');
@@ -89,6 +106,23 @@ describe('`string` function test', () => {
     const schema2 = racoon.string().max(3, false);
     expect(() => schema2.validate('abc')).to.throw('value length should less than 3');
     expect(schema2.validate('ab')).to.eq('ab');
+  });
+
+  it('`max` restrict the max length of string and accept custom error', () => {
+    const schema1 = racoon.string().max(3, 'custom error 1');
+    expect(schema1.validate('ab')).to.eq('ab');
+    expect(schema1.validate('abc')).to.eq('abc');
+    expect(() => schema1.validate('abcd')).to.throw(/^custom error 1$/);
+
+    const schema2 = racoon.string().max(3, true, 'custom error 2');
+    expect(schema2.validate('ab')).to.eq('ab');
+    expect(schema2.validate('abc')).to.eq('abc');
+    expect(() => schema2.validate('abcd')).to.throw(/^custom error 2$/);
+
+    const schema3 = racoon.string().max(3, false, 'custom error 3');
+    expect(schema3.validate('ab')).to.eq('ab');
+    expect(() => schema3.validate('abc')).to.throw(/^custom error 3$/);
+    expect(() => schema3.validate('abcd')).to.throw(/^custom error 3$/);
   });
 
   it('`pattern` restrict string by RegExp', () => {
