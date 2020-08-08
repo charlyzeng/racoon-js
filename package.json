@@ -4,7 +4,7 @@
   "description": "Little raccoon who loves washing hands, means this is a tiny tool lib for checking and cleaning json data.",
   "main": "lib/index.js",
   "scripts": {
-    "test": "npx mocha --require @babel/register --bail test/**/*.test.js"
+    "test": "npx mocha --require @babel/register test/**/*.test.js"
   },
   "repository": {
     "type": "git",
