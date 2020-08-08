@@ -55,6 +55,23 @@ describe('`number` function test', () => {
     expect(schema2.validate(2)).to.eq(2);
   });
 
+  it('`min` should restrict the min value and accept custom error', () => {
+    const schema1 = racoon.number().min(1, 'custom error 1');
+    expect(schema1.validate(1)).to.eq(1);
+    expect(schema1.validate(2)).to.eq(2);
+    expect(() => schema1.validate(0)).to.throw(/^custom error 1$/);
+
+    const schema2 = racoon.number().min(1, true, 'custom error 2');
+    expect(schema2.validate(1)).to.eq(1);
+    expect(schema2.validate(2)).to.eq(2);
+    expect(() => schema2.validate(0)).to.throw(/^custom error 2$/);
+
+    const schema3 = racoon.number().min(1, false, 'custom error 3');
+    expect(schema3.validate(2)).to.eq(2);
+    expect(() => schema3.validate(1)).to.throw(/^custom error 3$/);
+    expect(() => schema3.validate(0)).to.throw(/^custom error 3$/);
+  });
+
   it('`max` should restrict the max value', () => {
     const schema = racoon.number().max(1);
     expect(schema.validate(1)).to.eq(1);
@@ -64,6 +81,23 @@ describe('`number` function test', () => {
     const schema2 = racoon.number().max(1, false);
     expect(() => schema2.validate(1)).to.throw('value should less than 1');
     expect(schema2.validate(0)).to.eq(0);
+  });
+
+  it('`max` should restrict the max value and accept custom error', () => {
+    const schema1 = racoon.number().max(1, 'custom error 1');
+    expect(schema1.validate(0)).to.eq(0);
+    expect(schema1.validate(1)).to.eq(1);
+    expect(() => schema1.validate(2)).to.throw(/^custom error 1$/);
+
+    const schema2 = racoon.number().max(1, true, 'custom error 2');
+    expect(schema2.validate(0)).to.eq(0);
+    expect(schema2.validate(1)).to.eq(1);
+    expect(() => schema2.validate(2)).to.throw(/^custom error 2$/);
+
+    const schema3 = racoon.number().max(1, false, 'custom error 3');
+    expect(schema3.validate(0)).to.eq(0);
+    expect(() => schema3.validate(1)).to.throw(/^custom error 3$/);
+    expect(() => schema3.validate(2)).to.throw(/^custom error 3$/);
   });
 
   it('`int` should restrict the number be integer', () => {
