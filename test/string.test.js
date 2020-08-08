@@ -9,6 +9,24 @@ describe('`string` function test', () => {
     expect(() => schema.validate(1)).to.throw('value should be typeof string');
   });
 
+  it('should restrict the basic type and accept custom error', () => {
+    const schema = racoon.string('custom error');
+    expect(schema.validate('abc')).to.eq('abc');
+    expect(() => schema.validate(1)).to.throw(/^custom error$/);
+  });
+
+  it('`enum` should restrict the enum type', () => {
+    const schema = racoon.string().enum('a', 'b', 'c');
+    expect(schema.validate('b')).to.eq('b');
+    expect(() => schema.validate('d')).to.throw('value should be one of ["a","b","c"]');
+  });
+
+  it('`enum` should restrict the enum type and accept custom error', () => {
+    const schema = racoon.string().enum(['a', 'b', 'c'], 'custom error');
+    expect(schema.validate('b')).to.eq('b');
+    expect(() => schema.validate('d')).to.throw(/^custom error$/);
+  });
+
   it('`default` should make a default return when value is undefined/null/[EmptyString]', () => {
     const schema = racoon.string().default('default string');
     expect(schema.validate()).to.eq('default string');

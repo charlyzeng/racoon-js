@@ -16,6 +16,18 @@ describe('`object` function test', () => {
     ).to.throw('value should be typeof object');
   });
 
+  it('should restrict the basic type and accept custom error message', () => {
+    const schema = racoon.object('custom error');
+    expect(schema.validate({ a: 1 })).to.deep.eq({ a: 1 });
+    expect(() => schema.validate(1)).to.throw(/^custom error$/);
+
+    const schema2 = racoon.array(
+      {},
+      'custom error 2'
+    );
+    expect(() => schema2.validate(1)).to.throw(/^custom error 2$/);
+  });
+
   it('`default` should make a default return when value is undefined/null/empty', () => {
     const schema = racoon.object().default(() => ({ a: 1 }));
     expect(schema.validate()).to.deep.eq({ a: 1 });

@@ -10,6 +10,20 @@ describe('`array` function test', () => {
     expect(() => schema.validate(1)).to.throw('value should be typeof array');
   });
 
+  it('should restrict the basic type and accept custom error message', () => {
+    const schema = racoon.array('custom error');
+    expect(schema.validate([])).to.deep.eq([]);
+    const array = [1, 'abc', { a: 1 }, [2, '3']];
+    expect(schema.validate(array)).to.deep.eq(array);
+    expect(() => schema.validate(1)).to.throw(/^custom error$/);
+
+    const schema2 = racoon.array(
+      racoon.number().required(),
+      'custom error 2'
+    );
+    expect(() => schema2.validate(1)).to.throw(/^custom error 2$/);
+  });
+
   it('`default` should make a default return when value is undefined/null/empty', () => {
     const schema = racoon.array().default(() => [1, 2]);
     expect(schema.validate()).to.deep.eq([1, 2]);

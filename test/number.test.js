@@ -9,6 +9,12 @@ describe('`number` function test', () => {
     expect(() => schema.validate('abc')).to.throw('value should be typeof number');
   });
 
+  it('should restrict the basic type and accept custom error', () => {
+    const schema = racoon.number('custom error');
+    expect(schema.validate(1)).to.eq(1);
+    expect(() => schema.validate('abc')).to.throw(/^custom error$/);
+  });
+
   it('`required` should restrict value to be required', () => {
     const schema = racoon.number().required();
     expect(schema.validate(1)).to.eq(1);
@@ -30,6 +36,12 @@ describe('`number` function test', () => {
     expect(schema.validate(7)).to.eq(7);
     expect(() => schema.validate(3)).to.throw('value should be one of [1,5,7]');
     expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null/NaN');
+  });
+
+  it('`enum` should restrict the enum type and accept custom error', () => {
+    const schema = racoon.number().enum([1, 5, 7], 'my custom error message').required();
+    expect(schema.validate(1)).to.eq(1);
+    expect(() => schema.validate(3)).to.throw(/^my custom error message$/);
   });
 
   it('`min` should restrict the min value', () => {
