@@ -125,12 +125,15 @@ describe('`string` function test', () => {
     expect(() => schema3.validate('abcd')).to.throw(/^custom error 3$/);
   });
 
-  it('`pattern` restrict string by RegExp', () => {
+  it('`pattern` restrict string by RegExp and accept custom error', () => {
     const reg = /^\d+(\.(\d)+)?$/;
-    const schema = racoon.string().pattern(reg);
-    expect(schema.validate('12.00')).to.eq('12.00');
-    expect(schema.validate('0.01')).to.eq('0.01');
-    expect(() => schema.validate('12.a')).to.throw('value should match pattern');
+    const schema1 = racoon.string().pattern(reg);
+    expect(schema1.validate('12.00')).to.eq('12.00');
+    expect(schema1.validate('0.01')).to.eq('0.01');
+    expect(() => schema1.validate('12.a')).to.throw(`value should match pattern ${/^\d+(\.(\d)+)?$/.toString()}`);
+
+    const schema2 = racoon.string().pattern(reg, 'custom error');
+    expect(() => schema2.validate('12.a')).to.throw(/^custom error$/);
   });
 
   it('`required` should restrict data is required', () => {
