@@ -15,6 +15,18 @@ describe('`number` function test', () => {
     expect(() => schema.validate('abc')).to.throw(/^custom error$/);
   });
 
+  it('`allowNaN` should make it accept NaN and accept custom error', () => {
+    const schema1 = racoon.number().allowNaN();
+    expect(schema1.validate(0.1)).to.eq(0.1);
+    expect(schema1.validate(NaN)).to.be.NaN;
+    expect(() => schema1.validate('abc')).to.throw('value should be typeof number');
+
+    const schema2 = racoon.number('type custom error').allowNaN(false, 'allowNaN custom error');
+    expect(schema2.validate(0.1)).to.eq(0.1);
+    expect(() => schema2.validate(NaN)).to.throw(/^allowNaN custom error$/);
+    expect(() => schema2.validate('abc')).to.throw(/^type custom error$/);
+  });
+
   it('`required` should restrict value to be required', () => {
     const schema = racoon.number().required();
     expect(schema.validate(1)).to.eq(1);
@@ -108,6 +120,16 @@ describe('`number` function test', () => {
     expect(schema.validate(2.0)).to.eq(2);
     expect(() => schema.validate(NaN)).to.throws('value is not allowed to be NaN');
     expect(() => schema.validate(2.01)).to.throw('value should be an int');
+  });
+
+  it('`int` should restrict the number be integer and accept custom error', () => {
+    const schema = racoon.number().int('custom error');
+    expect(schema.validate(0)).to.eq(0);
+    expect(schema.validate(-1)).to.eq(-1);
+    expect(schema.validate(-0)).to.eq(0);
+    expect(schema.validate(2.0)).to.eq(2);
+    expect(() => schema.validate(NaN)).to.throws('value is not allowed to be NaN');
+    expect(() => schema.validate(2.01)).to.throw(/^custom error$/);
   });
 
   it('`custom` should restrict by user custom function', () => {
