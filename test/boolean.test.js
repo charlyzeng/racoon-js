@@ -9,23 +9,10 @@ describe('`boolean` function test', () => {
     expect(() => schema.validate(1)).to.throw('value should be typeof boolean');
   });
 
-  it('should restrict the basic type and accept custom error', () => {
-    const schema = racoon.boolean('custom error');
-    expect(schema.validate(true)).to.be.true;
-    expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(1)).to.throw(/^custom error$/);
-  });
-
   it('`enum` should restrict the enum type', () => {
     const schema = racoon.boolean().enum(false);
     expect(schema.validate(false)).to.be.false;
     expect(() => schema.validate(true)).to.throw('value should be one of [false]');
-  });
-
-  it('`enum` should restrict the enum type and accept custom error', () => {
-    const schema = racoon.boolean().enum([false], 'custom error').required();
-    expect(schema.validate(false)).to.eq(false);
-    expect(() => schema.validate(true)).to.throw(/^custom error$/);
   });
 
   it('`default` should make a default return when value is undefined/null', () => {

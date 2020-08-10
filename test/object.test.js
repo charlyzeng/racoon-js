@@ -16,26 +16,14 @@ describe('`object` function test', () => {
     ).to.throw('value should be typeof object');
   });
 
-  it('should restrict the basic type and accept custom error message', () => {
-    const schema = racoon.object('custom error');
-    expect(schema.validate({ a: 1 })).to.deep.eq({ a: 1 });
-    expect(() => schema.validate(1)).to.throw(/^custom error$/);
-
-    const schema2 = racoon.array(
-      {},
-      'custom error 2'
-    );
-    expect(() => schema2.validate(1)).to.throw(/^custom error 2$/);
-  });
-
   it('`default` should make a default return when value is undefined/null/empty', () => {
-    const schema = racoon.object().default(() => ({ a: 1 }));
-    expect(schema.validate()).to.deep.eq({ a: 1 });
-    expect(schema.validate(undefined)).to.deep.eq({ a: 1 });
-    expect(schema.validate(null)).to.deep.eq({ a: 1 });
-    expect(() => schema.validate(NaN)).to.throw('value should be typeof object');
-    expect(schema.validate({})).to.deep.eq({});
-    expect(schema.validate({ a: 2 })).to.deep.eq({ a: 2 });
+    const schema1 = racoon.object().default(() => ({ a: 1 }));
+    expect(schema1.validate()).to.deep.eq({ a: 1 });
+    expect(schema1.validate(undefined)).to.deep.eq({ a: 1 });
+    expect(schema1.validate(null)).to.deep.eq({ a: 1 });
+    expect(schema1.validate({})).to.deep.eq({});
+    expect(schema1.validate({ a: 2 })).to.deep.eq({ a: 2 });
+    expect(() => schema1.validate(NaN)).to.throw('value should be typeof object');
 
     const schema2 = racoon.object().default(() => ({ a: 1 }), true);
     expect(schema2.validate()).to.deep.eq({ a: 1 });
@@ -46,11 +34,11 @@ describe('`object` function test', () => {
   });
 
   it('`format` should set return value formatter', () => {
-    const schema = racoon.object().default({ c: 'c' }).format(value => ({ code: 100, value }));
-    expect(schema.validate({ a: 1, b: 2 })).to.deep.eq({ code: 100, value: { a: 1, b: 2 } });
-    expect(schema.validate(undefined)).to.deep.eq({ code: 100, value: { c: 'c' } });
-    expect(schema.validate(null)).to.deep.eq({ code: 100, value: { c: 'c' } });
-    expect(schema.validate({})).to.deep.eq({ code: 100, value: {} });
+    const schema1 = racoon.object().default({ c: 'c' }).format(value => ({ code: 100, value }));
+    expect(schema1.validate({ a: 1, b: 2 })).to.deep.eq({ code: 100, value: { a: 1, b: 2 } });
+    expect(schema1.validate(undefined)).to.deep.eq({ code: 100, value: { c: 'c' } });
+    expect(schema1.validate(null)).to.deep.eq({ code: 100, value: { c: 'c' } });
+    expect(schema1.validate({})).to.deep.eq({ code: 100, value: {} });
 
     const schema2 = racoon.object().default({ c: 'c' }, true).format(value => ({ code: 100, value }));
     expect(schema2.validate({ a: 1, b: 2 })).to.deep.eq({ code: 100, value: { a: 1, b: 2 } });
@@ -60,9 +48,9 @@ describe('`object` function test', () => {
   });
 
   it('`required` should restrict data is required', () => {
-    const schema = racoon.object().required();
-    expect(schema.validate({})).to.deep.eq({});
-    expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null');
+    const schema1 = racoon.object().required();
+    expect(schema1.validate({})).to.deep.eq({});
+    expect(() => schema1.validate(null)).to.throw('value is required and should not be undefined/null');
 
     const schema2 = racoon.object().required(true);
     expect(() => schema2.validate({})).to.throw('value is required and should not be empty');
@@ -70,7 +58,7 @@ describe('`object` function test', () => {
   });
 
   it('scene the contains unknown field', () => {
-    const schema = racoon.object({
+    const schema1 = racoon.object({
       name: racoon.string().required(),
       age: racoon.number().int().min(1).max(99)
     }).stripUnknown().required();
@@ -80,7 +68,7 @@ describe('`object` function test', () => {
       gender: 'this is a unknown field'
     };
     const dataClone = JSON.parse(JSON.stringify(data));
-    expect(schema.validate(data)).to.deep.eq({ name: 'Tom', age: null });
+    expect(schema1.validate(data)).to.deep.eq({ name: 'Tom', age: null });
 
     const schema2 = racoon.object({
       name: racoon.string().required(),

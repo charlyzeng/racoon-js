@@ -10,20 +10,6 @@ describe('`array` function test', () => {
     expect(() => schema.validate(1)).to.throw('value should be typeof array');
   });
 
-  it('should restrict the basic type and accept custom error message', () => {
-    const schema = racoon.array('custom error');
-    expect(schema.validate([])).to.deep.eq([]);
-    const array = [1, 'abc', { a: 1 }, [2, '3']];
-    expect(schema.validate(array)).to.deep.eq(array);
-    expect(() => schema.validate(1)).to.throw(/^custom error$/);
-
-    const schema2 = racoon.array(
-      racoon.number().required(),
-      'custom error 2'
-    );
-    expect(() => schema2.validate(1)).to.throw(/^custom error 2$/);
-  });
-
   it('`default` should make a default return when value is undefined/null/empty', () => {
     const schema = racoon.array().default(() => [1, 2]);
     expect(schema.validate()).to.deep.eq([1, 2]);
@@ -66,23 +52,6 @@ describe('`array` function test', () => {
     expect(schema2.validate([1, 2, 3, 4])).to.deep.eq([1, 2, 3, 4]);
   });
 
-  it('`min` should restrict the min length of array and accept custom error', () => {
-    const schema1 = racoon.array().min(3, 'custom error 1');
-    expect(schema1.validate([1, 2, 3])).to.deep.eq([1, 2, 3]);
-    expect(schema1.validate(['a', 'b', 'c', 'd'])).to.deep.eq(['a', 'b', 'c', 'd']);
-    expect(() => schema1.validate([1, 2])).to.throw(/^custom error 1$/);
-
-    const schema2 = racoon.array().min(3, true, 'custom error 2');
-    expect(schema2.validate([1, 2, 3])).to.deep.eq([1, 2, 3]);
-    expect(schema2.validate(['a', 'b', 'c', 'd'])).to.deep.eq(['a', 'b', 'c', 'd']);
-    expect(() => schema2.validate([1, 2])).to.throw(/^custom error 2$/);
-
-    const schema3 = racoon.array().min(3, false, 'custom error 3');
-    expect(schema3.validate(['a', 'b', 'c', 'd'])).to.deep.eq(['a', 'b', 'c', 'd']);
-    expect(() => schema3.validate([1, 2, 3])).to.throw(/^custom error 3$/);
-    expect(() => schema3.validate([1, 2])).to.throw(/^custom error 3$/);
-  });
-
   it('`max` mshould restrict the max length of array', () => {
     const schema = racoon.array().max(3);
     expect(schema.validate([1, 2, 3])).to.deep.eq([1, 2, 3]);
@@ -92,23 +61,6 @@ describe('`array` function test', () => {
     const schema2 = racoon.array().max(3, false);
     expect(() => schema2.validate([1, 2, 3])).to.throw('value length should less than 3');
     expect(schema2.validate([1, 2])).to.deep.eq([1, 2]);
-  });
-
-  it('`max` should restrict the max length of array and accept custom error', () => {
-    const schema1 = racoon.array().max(3, 'custom error 1');
-    expect(schema1.validate(['a', 'b'])).to.deep.eq(['a', 'b']);
-    expect(schema1.validate([1, 2, 3])).to.deep.eq([1, 2, 3]);
-    expect(() => schema1.validate([1, 2, 3, 4])).to.throw(/^custom error 1$/);
-
-    const schema2 = racoon.array().max(3, true, 'custom error 2');
-    expect(schema2.validate([1, 2])).to.deep.eq([1, 2]);
-    expect(schema2.validate(['a', 'b', 'c'])).to.deep.eq(['a', 'b', 'c']);
-    expect(() => schema2.validate([1, 2, 3, 4])).to.throw(/^custom error 2$/);
-
-    const schema3 = racoon.array().max(3, false, 'custom error 3');
-    expect(schema3.validate(['a', 'b'])).to.deep.eq(['a', 'b']);
-    expect(() => schema3.validate([1, 2, 3])).to.throw(/^custom error 3$/);
-    expect(() => schema3.validate([1, 2, 3, 4])).to.throw(/^custom error 3$/);
   });
 
   it('`custom` should restrict by user custom function', () => {
@@ -135,26 +87,6 @@ describe('`array` function test', () => {
     expect(() => schema2.validate()).to.throw('value is required and should not be empty');
     expect(() => schema2.validate(null)).to.throw('value is required and should not be empty');
     expect(() => schema2.validate([])).to.throw('value is required and should not be empty');
-  });
-
-  it('`required` should restrict the data is required and accept custom error', () => {
-    const schema1 = racoon.array().required('custom error 1');
-    expect(schema1.validate([])).to.deep.eq([]);
-    expect(schema1.validate([1, 'abc'])).to.deep.eq([1, 'abc']);
-    expect(() => schema1.validate()).to.throw(/^custom error 1$/);
-    expect(() => schema1.validate(null)).to.throw(/^custom error 1$/);
-
-    const schema2 = racoon.array().required(false, 'custom error 2');
-    expect(schema2.validate([])).to.deep.eq([]);
-    expect(schema2.validate([1, 'abc'])).to.deep.eq([1, 'abc']);
-    expect(() => schema2.validate()).to.throw(/^custom error 2$/);
-    expect(() => schema2.validate(null)).to.throw(/^custom error 2$/);
-
-    const schema3 = racoon.array().required(true, 'custom error 3');
-    expect(schema3.validate([1, 'abc'])).to.deep.eq([1, 'abc']);
-    expect(() => schema3.validate()).to.throw(/^custom error 3$/);
-    expect(() => schema3.validate(null)).to.throw(/^custom error 3$/);
-    expect(() => schema3.validate([])).to.throw(/^custom error 3$/);
   });
 
   it('`items` should restrict the type of array item', () => {
