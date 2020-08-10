@@ -125,13 +125,36 @@ describe('`array` function test', () => {
 
   it('`required` should restrict the data is required', () => {
     const schema = racoon.array().required();
+    expect(schema.validate([])).to.deep.eq([]);
+    expect(schema.validate([1, 'abc'])).to.deep.eq([1, 'abc']);
     expect(() => schema.validate()).to.throw('value is required and should not be undefined/null');
     expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null');
 
     const schema2 = racoon.array().required(true);
+    expect(schema2.validate([1, 'abc'])).to.deep.eq([1, 'abc']);
     expect(() => schema2.validate()).to.throw('value is required and should not be empty');
     expect(() => schema2.validate(null)).to.throw('value is required and should not be empty');
     expect(() => schema2.validate([])).to.throw('value is required and should not be empty');
+  });
+
+  it('`required` should restrict the data is required and accept custom error', () => {
+    const schema1 = racoon.array().required('custom error 1');
+    expect(schema1.validate([])).to.deep.eq([]);
+    expect(schema1.validate([1, 'abc'])).to.deep.eq([1, 'abc']);
+    expect(() => schema1.validate()).to.throw(/^custom error 1$/);
+    expect(() => schema1.validate(null)).to.throw(/^custom error 1$/);
+
+    const schema2 = racoon.array().required(false, 'custom error 2');
+    expect(schema2.validate([])).to.deep.eq([]);
+    expect(schema2.validate([1, 'abc'])).to.deep.eq([1, 'abc']);
+    expect(() => schema2.validate()).to.throw(/^custom error 2$/);
+    expect(() => schema2.validate(null)).to.throw(/^custom error 2$/);
+
+    const schema3 = racoon.array().required(true, 'custom error 3');
+    expect(schema3.validate([1, 'abc'])).to.deep.eq([1, 'abc']);
+    expect(() => schema3.validate()).to.throw(/^custom error 3$/);
+    expect(() => schema3.validate(null)).to.throw(/^custom error 3$/);
+    expect(() => schema3.validate([])).to.throw(/^custom error 3$/);
   });
 
   it('`items` should restrict the type of array item', () => {

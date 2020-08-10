@@ -69,4 +69,30 @@ describe('`any` function test', () => {
     expect(() => schema2.validate(NaN)).to.throw('value is required and should not be empty');
     expect(() => schema2.validate(0)).to.throw('value is required and should not be empty');
   });
+
+  it('`required` should restrict data is requird and accept custom error', () => {
+    const schema1 = racoon.any().required('custom error 1');
+    expect(schema1.validate(NaN)).to.be.NaN;
+    expect(schema1.validate(false)).to.be.false;
+    expect(schema1.validate(0)).to.eq(0);
+    expect(schema1.validate('')).to.eq('');
+    expect(() => schema1.validate(undefined)).to.throw(/^custom error 1$/);
+    expect(() => schema1.validate(null)).to.throw(/^custom error 1$/);
+
+    const schema2 = racoon.any().required(false, 'custom error 2');
+    expect(schema2.validate(NaN)).to.be.NaN;
+    expect(schema2.validate(false)).to.be.false;
+    expect(schema2.validate(0)).to.eq(0);
+    expect(schema2.validate('')).to.eq('');
+    expect(() => schema2.validate(undefined)).to.throw(/^custom error 2$/);
+    expect(() => schema2.validate(null)).to.throw(/^custom error 2$/);
+
+    const schema3 = racoon.any().required(true, 'custom error 3');
+    expect(() => schema3.validate({})).to.throw(/^custom error 3$/);
+    expect(() => schema3.validate([])).to.throw(/^custom error 3$/);
+    expect(() => schema3.validate('')).to.throw(/^custom error 3$/);
+    expect(() => schema3.validate(false)).to.throw(/^custom error 3$/);
+    expect(() => schema3.validate(NaN)).to.throw(/^custom error 3$/);
+    expect(() => schema3.validate(0)).to.throw(/^custom error 3$/);
+  });
 });
