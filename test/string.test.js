@@ -9,10 +9,22 @@ describe('`string` function test', () => {
     expect(() => schema.validate(1)).to.throw('value should be typeof string');
   });
 
+  it('should restrict the basic type and accept custom error', () => {
+    const schema = racoon.string().error('custom error');
+    expect(schema.validate('abc')).to.eq('abc');
+    expect(() => schema.validate(1)).to.throw(/^custom error$/);
+  });
+
   it('`enum` should restrict the enum type', () => {
     const schema = racoon.string().enum('a', 'b', 'c');
     expect(schema.validate('b')).to.eq('b');
     expect(() => schema.validate('d')).to.throw('value should be one of ["a","b","c"]');
+  });
+
+  it('`enum` should restrict the enum type accept custom error', () => {
+    const schema = racoon.string().enum('a', 'b', 'c').error('custom error');
+    expect(schema.validate('b')).to.eq('b');
+    expect(() => schema.validate('d')).to.throw(/^custom error$/);
   });
 
   it('`default` should make a default return when value is undefined/null/[EmptyString]', () => {
@@ -68,6 +80,17 @@ describe('`string` function test', () => {
     expect(schema2.validate('abcd')).to.eq('abcd');
   });
 
+  it('`min` restrict the min length of string and accept custom error', () => {
+    const schema1 = racoon.string().min(3).error('custom error 1');
+    expect(schema1.validate('abc')).to.eq('abc');
+    expect(schema1.validate('abcd')).to.eq('abcd');
+    expect(() => schema1.validate('ab')).to.throw(/^custom error 1$/);
+
+    const schema2 = racoon.string().min(3, false).error('custom error 2');
+    expect(schema2.validate('abcd')).to.eq('abcd');
+    expect(() => schema2.validate('abc')).to.throw(/^custom error 2$/);
+  });
+
   it('`max` restrict the max length of string', () => {
     const schema1 = racoon.string().max(3);
     expect(schema1.validate('abc')).to.eq('abc');
@@ -79,6 +102,17 @@ describe('`string` function test', () => {
     expect(schema2.validate('ab')).to.eq('ab');
   });
 
+  it('`max` restrict the max length of string and accept custom error', () => {
+    const schema1 = racoon.string().max(3).error('custom error 1');
+    expect(schema1.validate('abc')).to.eq('abc');
+    expect(schema1.validate('ab')).to.eq('ab');
+    expect(() => schema1.validate('abcd')).to.throw(/^custom error 1$/);
+
+    const schema2 = racoon.string().max(3, false).error('custom error 2');
+    expect(schema2.validate('ab')).to.eq('ab');
+    expect(() => schema2.validate('abc')).to.throw(/^custom error 2$/);
+  });
+
   it('`required` should restrict data is required', () => {
     const schema1 = racoon.string().required();
     expect(schema1.validate('test')).to.eq('test');
@@ -88,6 +122,17 @@ describe('`string` function test', () => {
 
     const schema2 = racoon.string().required(true);
     expect(() => schema2.validate('')).to.throw('value is required and should not be empty');
+  });
+
+  it('`required` should restrict data is required and accept custom error', () => {
+    const schema1 = racoon.string().required().error('custom error');
+    expect(schema1.validate('test')).to.eq('test');
+    expect(() => schema1.validate()).to.throw(/^custom error$/);
+    expect(() => schema1.validate(undefined)).to.throw(/^custom error$/);
+    expect(() => schema1.validate(null)).to.throw(/^custom error$/);
+
+    const schema2 = racoon.string().required(true).error('custom error 2');
+    expect(() => schema2.validate('')).to.throw(/^custom error 2$/);
   });
 
   it('`custom` should restrict by user custom function', () => {
@@ -110,5 +155,31 @@ describe('`string` function test', () => {
     expect(() => schema.validate('abcdef')).to.throw('value length should less than or equal 5');
     expect(() => schema.validate('ab')).to.throw('value length should greater than 2');
     expect(() => schema.validate()).to.throw('value is required and should not be undefined/null');
+  });
+
+  it('complex scene 2', () => {
+    const schema = racoon
+      .string()
+      .error('error1')
+      .min(2, false)
+      .error('error2')
+      .max(5)
+      .error('error3')
+      .required(true)
+      .error('error4')
+      .custom((val) => {
+        if (val === '12345') {
+          throw new Error('e');
+        }
+        return true;
+      })
+      .error('error5');
+
+    expect(schema.validate('abcde')).to.eq('abcde');
+    expect(() => schema.validate(1)).to.throw('error1');
+    expect(() => schema.validate('ab')).to.throw('error2');
+    expect(() => schema.validate('abcdef')).to.throw('error3');
+    expect(() => schema.validate('')).to.throw('error4');
+    expect(() => schema.validate('12345')).to.throw('error5');
   });
 });

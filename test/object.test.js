@@ -16,6 +16,20 @@ describe('`object` function test', () => {
     ).to.throw('value should be typeof object');
   });
 
+  it('should restrict the basic type and accept custom error', () => {
+    const schema = racoon.object().error('custom error');
+    expect(schema.validate()).to.be.undefined;
+    expect(schema.validate(null)).to.be.null;
+    expect(schema.validate({})).to.deep.eq({});
+    expect(() => schema.validate(1)).to.throw(/^custom error$/);
+    expect(
+      () => schema.validate(Promise.resolve())
+    ).to.throw(/^custom error$/);
+    expect(
+      () => schema.validate(() => {})
+    ).to.throw(/^custom error$/);
+  });
+
   it('`default` should make a default return when value is undefined/null/empty', () => {
     const schema1 = racoon.object().default(() => ({ a: 1 }));
     expect(schema1.validate()).to.deep.eq({ a: 1 });
@@ -54,6 +68,16 @@ describe('`object` function test', () => {
 
     const schema2 = racoon.object().required(true);
     expect(() => schema2.validate({})).to.throw('value is required and should not be empty');
+    expect(schema2.validate({ a: 1 })).to.deep.eq({ a: 1 });
+  });
+
+  it('`required` should restrict data is required and accept custom error', () => {
+    const schema1 = racoon.object().required().error('custom error 1');
+    expect(schema1.validate({})).to.deep.eq({});
+    expect(() => schema1.validate(null)).to.throw(/^custom error 1$/);
+
+    const schema2 = racoon.object().required(true).error('custom error 2');
+    expect(() => schema2.validate({})).to.throw(/^custom error 2$/);
     expect(schema2.validate({ a: 1 })).to.deep.eq({ a: 1 });
   });
 
