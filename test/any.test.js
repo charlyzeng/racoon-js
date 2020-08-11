@@ -40,39 +40,39 @@ describe('`any` function test', () => {
 
   it('`required` restrict data is required', () => {
     const schema1 = racoon.any().required();
-    expect(schema1.validate(NaN)).to.be.NaN;
     expect(schema1.validate(false)).to.be.false;
     expect(schema1.validate(0)).to.eq(0);
     expect(schema1.validate('')).to.eq('');
-    expect(() => schema1.validate(undefined)).to.throw('value is required and should not be undefined/null');
-    expect(() => schema1.validate(null)).to.throw('value is required and should not be undefined/null');
+    expect(() => schema1.validate(NaN)).to.throw('value is required and should not be undefined/null/NaN');
+    expect(() => schema1.validate(undefined)).to.throw('value is required and should not be undefined/null/NaN');
+    expect(() => schema1.validate(null)).to.throw('value is required and should not be undefined/null/NaN');
 
     const schema2 = racoon.any().required(true);
+    expect(schema2.validate(false)).to.be.false;
+    expect(schema2.validate(0)).to.eq(0);
     expect(() => schema2.validate({})).to.throw('value is required and should not be empty');
     expect(() => schema2.validate([])).to.throw('value is required and should not be empty');
     expect(() => schema2.validate('')).to.throw('value is required and should not be empty');
-    expect(() => schema2.validate(false)).to.throw('value is required and should not be empty');
     expect(() => schema2.validate(NaN)).to.throw('value is required and should not be empty');
-    expect(() => schema2.validate(0)).to.throw('value is required and should not be empty');
   });
 
   it('`required` restrict data is required and accept custom data', () => {
     const schema1 = racoon.any().required().error('custom error 1');
-    expect(schema1.validate(NaN)).to.be.NaN;
     expect(schema1.validate(false)).to.be.false;
     expect(schema1.validate(0)).to.eq(0);
     expect(schema1.validate('')).to.eq('');
+    expect(() => schema1.validate(NaN)).to.throw(/^custom error 1$/);
     expect(() => schema1.validate(undefined)).to.throw(/^custom error 1$/);
     expect(() => schema1.validate(null)).to.throw(/^custom error 1$/);
 
     const schema2 = racoon.any().required(true).error('custom error 2');
     expect(schema2.validate(1)).to.be.eq(1);
+    expect(schema2.validate(false)).to.be.false;
+    expect(schema2.validate(0)).to.eq(0);
     expect(() => schema2.validate({})).to.throw(/^custom error 2$/);
     expect(() => schema2.validate([])).to.throw(/^custom error 2$/);
     expect(() => schema2.validate('')).to.throw(/^custom error 2$/);
-    expect(() => schema2.validate(false)).to.throw(/^custom error 2$/);
     expect(() => schema2.validate(NaN)).to.throw(/^custom error 2$/);
-    expect(() => schema2.validate(0)).to.throw(/^custom error 2$/);
   });
 
   it('`enum` should restrict enum type and accept custom error', () => {
