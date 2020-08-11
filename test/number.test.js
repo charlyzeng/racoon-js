@@ -6,6 +6,8 @@ describe('`number` function test', () => {
     const schema = racoon.number();
     expect(schema.validate(0.1)).to.eq(0.1);
     expect(() => schema.validate(NaN)).to.throw('value is not allowed to be NaN');
+    expect(() => schema.validate(Infinity)).to.throw('value is not allowed to be Infinity');
+    expect(() => schema.validate(-Infinity)).to.throw('value is not allowed to be Infinity');
     expect(() => schema.validate('abc')).to.throw('value should be typeof number');
   });
 
@@ -13,21 +15,46 @@ describe('`number` function test', () => {
     const schema = racoon.number().error('custom error');
     expect(schema.validate(0.1)).to.eq(0.1);
     expect(() => schema.validate(NaN)).to.throw(/^custom error$/);
+    expect(() => schema.validate(Infinity)).to.throw(/^custom error$/);
     expect(() => schema.validate('abc')).to.throw(/^custom error$/);
   });
 
   it('`required` should restrict value to be required', () => {
-    const schema1 = racoon.number().required();
+    const schema = racoon.number().required();
+    expect(schema.validate(1)).to.eq(1);
+    expect(() => schema.validate()).to.throw('value is required and should not be undefined/null');
+    expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null');
+    expect(() => schema.validate(NaN)).to.throw('value is not allowed to be NaN');
+  });
+
+  it('`allowNaN` should work with required', () => {
+    const schema1 = racoon.number().allowNaN().required();
     expect(schema1.validate(1)).to.eq(1);
+    expect(schema1.validate(NaN)).to.be.NaN;
     expect(() => schema1.validate()).to.throw('value is required and should not be undefined/null');
     expect(() => schema1.validate(null)).to.throw('value is required and should not be undefined/null');
-    expect(() => schema1.validate(NaN)).to.throw('value is not allowed to be NaN');
 
-    const schema2 = racoon.number().allowNaN().required();
+    const schema2 = racoon.number().allowNaN().required(true);
     expect(schema2.validate(1)).to.eq(1);
-    expect(schema2.validate(NaN)).to.be.NaN;
-    expect(() => schema2.validate()).to.throw('value is required and should not be undefined/null');
-    expect(() => schema2.validate(null)).to.throw('value is required and should not be undefined/null');
+    expect(() => schema2.validate(NaN)).to.throw('value is required and should not be empty');
+
+    const schema3 = racoon.number().allowNaN().required();
+    expect(schema3.validate(1)).to.eq(1);
+    expect(schema3.validate(NaN)).to.be.NaN;
+  });
+
+  it('`allowInfinity` should work with required', () => {
+    const schema1 = racoon.number().allowInfinity();
+    expect(schema1.validate(Infinity)).to.eq(Infinity);
+    expect(schema1.validate(-Infinity)).to.eq(-Infinity);
+
+    const schema2 = racoon.number().allowInfinity().required();
+    expect(schema2.validate(Infinity)).to.eq(Infinity);
+    expect(schema2.validate(-Infinity)).to.eq(-Infinity);
+
+    const schema3 = racoon.number().allowInfinity().required(true);
+    expect(schema3.validate(Infinity)).to.eq(Infinity);
+    expect(schema3.validate(-Infinity)).to.eq(-Infinity);
   });
 
   it('`required` should restrict value to be required and accept custom error', () => {
