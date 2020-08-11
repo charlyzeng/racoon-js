@@ -28,19 +28,11 @@ describe('`number` function test', () => {
   });
 
   it('`allowNaN` should work with required', () => {
-    const schema1 = racoon.number().allowNaN().required();
-    expect(schema1.validate(1)).to.eq(1);
-    expect(schema1.validate(NaN)).to.be.NaN;
-    expect(() => schema1.validate()).to.throw('value is required and should not be undefined/null');
-    expect(() => schema1.validate(null)).to.throw('value is required and should not be undefined/null');
-
-    const schema2 = racoon.number().allowNaN().required(true);
-    expect(schema2.validate(1)).to.eq(1);
-    expect(() => schema2.validate(NaN)).to.throw('value is required and should not be empty');
-
-    const schema3 = racoon.number().allowNaN().required();
-    expect(schema3.validate(1)).to.eq(1);
-    expect(schema3.validate(NaN)).to.be.NaN;
+    const schema = racoon.number().allowNaN().required();
+    expect(schema.validate(1)).to.eq(1);
+    expect(() => schema.validate(NaN)).to.throw('value is required and should not be NaN');
+    expect(() => schema.validate()).to.throw('value is required and should not be undefined/null');
+    expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null');
   });
 
   it('`allowInfinity` should work with required', () => {
@@ -77,7 +69,7 @@ describe('`number` function test', () => {
       .required()
       .error('error2');
     expect(schema3.validate(1)).to.eq(1);
-    expect(schema3.validate(NaN)).to.be.NaN;
+    expect(() => schema3.validate(NaN)).to.throw(/^error2$/);
     expect(() => schema3.validate('abc')).to.throw(/^error1$/);
     expect(() => schema3.validate()).to.throw(/^error2$/);
     expect(() => schema3.validate(null)).to.throw(/^error2$/);
