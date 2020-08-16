@@ -1,16 +1,17 @@
 import resolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
+import { main, module } from './package.json';
 
 export default {
   input: './lib/index.js',
   output: [
     {
-      file: 'dist/racoon.umd.js',
+      file: main,
       format: 'umd',
       name: 'racoon'
     },
     {
-      file: 'dist/racoon.esm.js',
+      file: module,
       format: 'esm'
     }
   ],
