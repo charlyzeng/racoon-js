@@ -114,9 +114,23 @@ describe('`any` function test', () => {
 
     const schema2 = racoon.any().default('string');
     expect(schema2.validate(12)).to.eq(12);
+    expect(schema2.validate('')).to.eq('');
+    expect(schema2.validate({})).to.deep.eq({});
+    expect(schema2.validate([])).to.deep.eq([]);
     expect(schema2.validate()).to.eq('string');
     expect(schema2.validate(undefined)).to.eq('string');
     expect(schema2.validate(null)).to.eq('string');
+    expect(schema2.validate(NaN)).to.eq('string');
+
+    const schema3 = racoon.any().default('string', true);
+    expect(schema3.validate(12)).to.eq(12);
+    expect(schema3.validate('')).to.eq('string');
+    expect(schema3.validate({})).to.eq('string');
+    expect(schema3.validate([])).to.eq('string');
+    expect(schema3.validate()).to.eq('string');
+    expect(schema3.validate(undefined)).to.eq('string');
+    expect(schema3.validate(null)).to.eq('string');
+    expect(schema3.validate(NaN)).to.eq('string');
   });
 
   it('`format` should set return value formatter', () => {
