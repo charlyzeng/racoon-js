@@ -1,7 +1,7 @@
 {
   "name": "racoon-js",
   "version": "0.0.1",
-  "description": "Little raccoon who loves washing hands, means this is a tiny tool lib for checking and cleaning json data.",
+  "description": "A tiny tool for checking and cleaning json data. ",
   "main": "dist/racoon.umd.js",
   "module": "dist/racoon.esm.js",
   "scripts": {
