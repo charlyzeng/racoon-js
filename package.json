@@ -2,9 +2,11 @@
   "name": "racoon-js",
   "version": "0.0.1",
   "description": "Little raccoon who loves washing hands, means this is a tiny tool lib for checking and cleaning json data.",
-  "main": "lib/index.js",
+  "main": "dist/racoon.umd.js",
+  "module": "dist/racoon.esm.js",
   "scripts": {
-    "test": "npx mocha --require @babel/register test/**/*.test.js"
+    "test": "npx mocha --require @babel/register test/**/*.test.js",
+    "build": "npx rollup -c rollup.config.js"
   },
   "repository": {
     "type": "git",
@@ -36,6 +38,8 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.10.4",
     "@babel/preset-env": "^7.10.4",
     "@babel/register": "^7.10.5",
+    "@rollup/plugin-babel": "^5.2.0",
+    "@rollup/plugin-node-resolve": "^9.0.0",
     "babel-eslint": "^10.1.0",
     "chai": "^4.2.0",
     "eslint": "^7.4.0",
