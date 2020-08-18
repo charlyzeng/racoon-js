@@ -1,6 +1,12 @@
 # racoon-js
 A tiny tool for checking and cleaning json data.
 
+[![npm version](https://img.shields.io/npm/v/racoon-js.svg?style=flat-square)](https://www.npmjs.com/package/racoon-js)
+[![build status](https://img.shields.io/badge/build-passing-brightgreen)](https://travis-ci.org/github/charlyzeng/racoon-js)
+[![code coverage](https://img.shields.io/coveralls/chenglezeng/racoon-js.svg?style=flat-square)](https://coveralls.io/r/chenglezeng/racoon-js)
+[![install size](https://packagephobia.com/badge?p=racoon-js)](https://packagephobia.com/result?p=racoon-js)
+[![npm downloads](https://img.shields.io/npm/dm/racoon-js.svg?style=flat-square)](http://npm-stat.com/charts.html?package=racoon-js)
+
 [API Doc](https://racoon-js.gitbook.io/zh/)
 
 ## Features
