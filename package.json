@@ -5,6 +5,7 @@
   "main": "dist/racoon.umd.js",
   "module": "dist/racoon.esm.js",
   "scripts": {
+    "lint": "npx eslint lib test",
     "test": "npx mocha --require @babel/register test/**/*.test.js",
     "cover": "npx nyc npm test",
     "build": "npx rollup -c rollup.config.js"
