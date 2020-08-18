@@ -3,6 +3,7 @@ node_modules
 package-lock.json
 
 .nyc_output
+coverage
 
 # Editor directories and files
 .idea
