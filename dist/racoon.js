@@ -1762,4 +1762,4 @@
   Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
-//# sourceMappingURL=racoon.umd.js.map
+//# sourceMappingURL=racoon.js.map
