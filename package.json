@@ -46,6 +46,7 @@
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
     "mocha": "^8.1.0",
-    "rollup": "^2.26.2"
+    "rollup": "^2.26.2",
+    "rollup-plugin-terser": "^7.0.0"
   }
 }

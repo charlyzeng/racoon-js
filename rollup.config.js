@@ -1,5 +1,6 @@
 import resolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
+import { terser } from 'rollup-plugin-terser';
 import { main, module } from './package.json';
 
 export default {
@@ -8,11 +9,26 @@ export default {
     {
       file: main,
       format: 'umd',
-      name: 'racoon'
+      name: 'racoon',
+      sourcemap: 'source-map'
+    },
+    {
+      file: 'dist/racoon.js',
+      format: 'umd',
+      name: 'racoon',
+      sourcemap: 'source-map'
+    },
+    {
+      file: 'dist/racoon.min.js',
+      format: 'umd',
+      name: 'racoon',
+      plugins: [terser()],
+      sourcemap: 'source-map'
     },
     {
       file: module,
-      format: 'esm'
+      format: 'esm',
+      sourcemap: 'source-map'
     }
   ],
   plugins: [
