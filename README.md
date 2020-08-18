@@ -1,27 +1,53 @@
 # racoon-js
 A tiny tool for checking and cleaning json data.
 
-# How To Use
+[API Doc](https://racoon-js.gitbook.io/zh/)
+
+## Features
+- 🌈 Support both browser and node.
+- ❄️ The data format can be flexibly defined, and any level of attribute nesting of Object is supported.
+- 🔗 Support chain call without paying attention to call sequence.
+
+## Browser Support
+![Chrome](https://raw.github.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png) | ![Safari](https://raw.github.com/alrra/browser-logos/master/src/safari/safari_48x48.png) | ![Opera](https://raw.github.com/alrra/browser-logos/master/src/opera/opera_48x48.png) | ![Edge](https://raw.github.com/alrra/browser-logos/master/src/edge/edge_48x48.png) | ![IE](https://raw.github.com/alrra/browser-logos/master/src/archive/internet-explorer_9-11/internet-explorer_9-11_48x48.png) |
+--- | --- | --- | --- | --- | --- |
+Latest ✔ | Latest ✔ | Latest ✔ | Latest ✔ | Latest ✔ | 10 ✔ |
+
+## Installing
+Using npm:
+```bash
+$ npm install racoon-js
+```
+
+Using yarn:
+```bash
+yarn add racoon-js
+```
+
+Using cdn:
+```html
+<script src="//cdn.jsdelivr.net/npm/racoon-js@latest/dist/racoon.min.js"></script>
+```
+
+## Example
 ```javascript
 import racoon from 'racoon-js';
 
-// define data format schema
+// Define data format schema
 const schema = racoon.object({
   name: racoon
     .string()
     .min(3)
+    .error('name is too short') // You can add your custom error message
     .max(30)
-    .required(),
+    .error('name is too long')
+    .required(), // Name can not be `undefined` or `null`
   age: racoon
     .number()
     .int()
-    .min(1)
-    .max(100)
-    .default(1),
-  married: racoon
-    .boolean()
-    .default(false), // if value is `null` or `undefined`, then return default value `false`
-  favorite: racoon.object({
+    .default(1) // If value is `null` or `undefined`, then return default value `false`
+  married: racoon.boolean(),
+  favorite: racoon.object({ // You can define deep nested object format schema
     sports: racoon.array(
       racoon.string().min(1).max(100).required()
     ),
@@ -30,7 +56,7 @@ const schema = racoon.object({
       date: racoon
         .string()
         .pattern(/^\d{4}-\d{1,2}-\d{1,2}$/)
-        .format((date) => { // format the return value
+        .format((date) => { // Format the return value
           return `${date} 12:00:00`;
         })
     })
@@ -52,6 +78,7 @@ try {
 } catch (error) {
   console.error(error);
   // Error: "favorite.book.title": value should be typeof string
+  // ↑↑↑ The error message can be customed
 }
 
 // If you don't like `try-catch` code style
@@ -62,6 +89,3 @@ try {
 // For Example:
 const { error, value } = schema.validateSilent({ ... });
 ```
-
-# Api Document
-[Click Here](https://racoon-js.gitbook.io/zh/)
