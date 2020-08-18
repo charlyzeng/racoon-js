@@ -28,6 +28,10 @@ describe('`boolean` function test', () => {
     expect(() => schema.validate(true)).to.throw(/^custom error$/);
   });
 
+  it('`default` should deny empty arguments', () => {
+    expect(() => racoon.boolean().default()).to.throw('`default` args can not be empty');
+  });
+
   it('`default` should make a default return when value is undefined/null', () => {
     const schema = racoon.boolean().default(true);
     expect(schema.validate()).to.be.true;

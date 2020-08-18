@@ -11,6 +11,20 @@ describe('`number` function test', () => {
     expect(() => schema.validate('abc')).to.throw('value should be typeof number');
   });
 
+  it('`validateSilent` should work', () => {
+    const schema = racoon.number();
+    {
+      const { error, value } = schema.validateSilent(1);
+      expect(error).to.be.undefined;
+      expect(value).to.eq(1);
+    }
+    {
+      const { error, value } = schema.validateSilent('abc');
+      expect(error.toString()).to.contains('value should be typeof number');
+      expect(value).to.eq('abc');
+    }
+  });
+
   it('should restrict the basic type and accept custom error', () => {
     const schema = racoon.number().error('custom error');
     expect(schema.validate(0.1)).to.eq(0.1);
@@ -75,6 +89,14 @@ describe('`number` function test', () => {
     expect(() => schema3.validate(null)).to.throw(/^error2$/);
   });
 
+  it('`custom` should deny non-function param', () => {
+    expect(() => racoon.number().custom([])).to.throw('`custom` must receive a Function parameter');
+  });
+
+  it('`enum` should deny empty param', () => {
+    expect(() => racoon.number().enum()).to.throw('enum arguments can not be empty');
+  });
+
   it('`enum` should restrict enum type', () => {
     const schema = racoon.number().enum(1, 5, 7).required();
     expect(schema.validate(1)).to.eq(1);
@@ -91,6 +113,10 @@ describe('`number` function test', () => {
     expect(schema.validate(7)).to.eq(7);
     expect(() => schema.validate(3)).to.throw(/^custom error$/);
     expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null');
+  });
+
+  it('`min` should deny non-number param', () => {
+    expect(() => racoon.number().min('abc')).to.throw('`min` should be a number');
   });
 
   it('`min` should restrict the min value', () => {
@@ -113,6 +139,10 @@ describe('`number` function test', () => {
     const schema2 = racoon.number().min(1, false).error('custom error 2');
     expect(schema2.validate(2)).to.eq(2);
     expect(() => schema2.validate(1)).to.throw(/^custom error 2$/);
+  });
+
+  it('`max` should deny non-number param', () => {
+    expect(() => racoon.number().max('abc')).to.throw('`max` should be typeof number');
   });
 
   it('`max` should restrict the max value', () => {
@@ -169,6 +199,10 @@ describe('`number` function test', () => {
     expect(schema.validate(4)).to.eq(4);
     expect(schema.validate(9)).to.eq(9);
     expect(() => schema.validate(5)).to.throw(/^custom error$/);
+  });
+
+  it('`default` should deny empty arguments', () => {
+    expect(() => racoon.number().default()).to.throw('`default` args can not be empty');
   });
 
   it('`default` should make a default return when value is undefined/null/NaN', () => {

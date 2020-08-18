@@ -27,6 +27,10 @@ describe('`string` function test', () => {
     expect(() => schema.validate('d')).to.throw(/^custom error$/);
   });
 
+  it('`default` should deny empty arguments', () => {
+    expect(() => racoon.string().default()).to.throw('`default` args can not be empty');
+  });
+
   it('`default` should make a default return when value is undefined/null/[EmptyString]', () => {
     const schema1 = racoon.string().default('default string');
     expect(schema1.validate()).to.eq('default string');
@@ -51,6 +55,10 @@ describe('`string` function test', () => {
     expect(schema3.validate('other string')).to.eq('other string');
   });
 
+  it('`format` should deny non-function arguments', () => {
+    expect(() => racoon.string().format([])).to.throw('`format` argument should be a function');
+  });
+
   it('`format` should set return value formatter', () => {
     const schema = racoon.string().format(str => `#${str}`);
     expect(schema.validate('str')).to.be.eq('#str');
@@ -67,6 +75,10 @@ describe('`string` function test', () => {
 
     const schema3 = racoon.string().default('default str', true).format(str => `#${str}`);
     expect(schema3.validate('')).to.be.eq('#default str');
+  });
+
+  it('`min` should deny non-number param', () => {
+    expect(() => racoon.string().min('1.0')).to.throw('`min` should be a number');
   });
 
   it('`min` restrict the min length of string', () => {
@@ -91,6 +103,10 @@ describe('`string` function test', () => {
     expect(() => schema2.validate('abc')).to.throw(/^custom error 2$/);
   });
 
+  it('`max` should deny non-number param', () => {
+    expect(() => racoon.string().max('1.0')).to.throw('`max` should be typeof number');
+  });
+
   it('`max` restrict the max length of string', () => {
     const schema1 = racoon.string().max(3);
     expect(schema1.validate('abc')).to.eq('abc');
@@ -111,6 +127,16 @@ describe('`string` function test', () => {
     const schema2 = racoon.string().max(3, false).error('custom error 2');
     expect(schema2.validate('ab')).to.eq('ab');
     expect(() => schema2.validate('abc')).to.throw(/^custom error 2$/);
+  });
+
+  it('`pattern` should deny non-regexp param', () => {
+    expect(() => racoon.string().pattern([])).to.throw('pattern should be a RegExp');
+  });
+
+  it('`pattern` should restrict string by RegExp', () => {
+    const schema = racoon.string().pattern(/^\d{4}-\d{2}-\d{2}$/);
+    expect(schema.validate('2020-02-12')).to.eq('2020-02-12');
+    expect(() => schema.validate('2020-2-12')).to.throw(`value should match pattern ${/^\d{4}-\d{2}-\d{2}$/.toString()}`);
   });
 
   it('`required` should restrict data is required', () => {

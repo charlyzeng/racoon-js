@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import racoon from '../lib';
+import { isInt } from '../lib/utils/is';
 
 describe('other test', () => {
   it('`format` should bind ctx', () => {
@@ -122,5 +123,14 @@ describe('other test', () => {
     expect(() => schema1.validate(null)).to.throw('value is required and should not be undefined/null#5');
     expect(() => schema1.validate(undefined)).to.throw('value is required and should not be undefined/null#6');
     expect(() => schema1.validate(NaN)).to.throw('value is required and should not be NaN#7');
+  });
+
+  it('`isInt` should work', () => {
+    expect(isInt(NaN)).to.be.false;
+    expect(isInt({})).to.be.false;
+    expect(isInt(true)).to.be.false;
+    expect(isInt('abc')).to.be.false;
+    expect(isInt(1.2)).to.be.false;
+    expect(isInt(2)).to.be.true;
   });
 });

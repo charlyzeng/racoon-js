@@ -16,6 +16,14 @@ describe('`object` function test', () => {
     ).to.throw('value should be typeof object');
   });
 
+  it('`config` should ignore non-schema prop', () => {
+    const schema = racoon.object({
+      name: String,
+      age: racoon.number()
+    });
+    expect(() => schema.validate({ name: 'Tom', age: 22 })).to.throw('the key `name` is not allowed');
+  });
+
   it('should restrict the basic type and accept custom error', () => {
     const schema = racoon.object().error('custom error');
     expect(schema.validate()).to.be.undefined;
