@@ -1,6 +1,6 @@
 {
   "name": "racoon-js",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A tiny tool for checking and cleaning json data.",
   "main": "dist/racoon.umd.js",
   "module": "dist/racoon.esm.js",
