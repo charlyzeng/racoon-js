@@ -345,11 +345,6 @@ var ValidateError = /*#__PURE__*/function (_Error) {
     value: function toString() {
       return "Validate".concat(_get(_getPrototypeOf(ValidateError.prototype), "toString", this).call(this));
     }
-  }, {
-    key: Symbol.toStringTag,
-    get: function get() {
-      return 'ValidateError';
-    }
   }]);
 
   return ValidateError;
@@ -524,10 +519,8 @@ var RestrictNumberMax = /*#__PURE__*/function (_RestrictBase) {
 
   var _super = _createSuper(RestrictNumberMax);
 
-  function RestrictNumberMax(max) {
+  function RestrictNumberMax(max, closed) {
     var _this;
-
-    var closed = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
     _classCallCheck(this, RestrictNumberMax);
 
@@ -569,10 +562,8 @@ var RestrictNumberMin = /*#__PURE__*/function (_RestrictBase) {
 
   var _super = _createSuper(RestrictNumberMin);
 
-  function RestrictNumberMin(min) {
+  function RestrictNumberMin(min, closed) {
     var _this;
-
-    var closed = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
     _classCallCheck(this, RestrictNumberMin);
 
@@ -1034,10 +1025,8 @@ var RestrictLengthMax = /*#__PURE__*/function (_RestrictBase) {
 
   var _super = _createSuper(RestrictLengthMax);
 
-  function RestrictLengthMax(max) {
+  function RestrictLengthMax(max, closed) {
     var _this;
-
-    var closed = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
     _classCallCheck(this, RestrictLengthMax);
 
@@ -1079,10 +1068,8 @@ var RestrictLengthMin = /*#__PURE__*/function (_RestrictBase) {
 
   var _super = _createSuper(RestrictLengthMin);
 
-  function RestrictLengthMin(min) {
+  function RestrictLengthMin(min, closed) {
     var _this;
-
-    var closed = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
     _classCallCheck(this, RestrictLengthMin);
 
@@ -1517,10 +1504,6 @@ var TypeObject = /*#__PURE__*/function (_TypeBase) {
         var schema = this.config[key];
 
         if (this.hasKey(key) === false) {
-          if (this.isStripUnknown === true) {
-            continue;
-          }
-
           if (this.isAllowUnknown === true) {
             result[key] = obj[key];
             continue;
@@ -1544,11 +1527,7 @@ var TypeObject = /*#__PURE__*/function (_TypeBase) {
               type: 'prop',
               key: key
             }]));
-
-            if (keyChainStr) {
-              keyChainStr = "\"".concat(keyChainStr, "\": ");
-            }
-
+            keyChainStr = "\"".concat(keyChainStr, "\": ");
             throw new Error("".concat(keyChainStr).concat(error.message));
           } else {
             throw error;
@@ -1683,11 +1662,7 @@ var TypeArray = /*#__PURE__*/function (_TypeBase) {
                 type: 'index',
                 key: i
               }]));
-
-              if (keyChainStr) {
-                keyChainStr = "\"".concat(keyChainStr, "\": ");
-              }
-
+              keyChainStr = "\"".concat(keyChainStr, "\": ");
               throw new Error("".concat(keyChainStr).concat(error.message));
             } else {
               throw error;
