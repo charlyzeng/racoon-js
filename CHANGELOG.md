@@ -8,3 +8,10 @@
 
 ### 1.1.0 (Aug 17, 2020)
 - Add `index.d.ts`
+
+### 1.2.0 (Aug 18, 2020)
+- Add source map
+
+### 1.2.1 (Aug 19, 2020)
+- Remove `Symbol` from code
+- Remove some useless code
