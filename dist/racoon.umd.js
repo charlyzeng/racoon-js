@@ -340,10 +340,16 @@
 
     var _super = _createSuper(ValidateError);
 
-    function ValidateError() {
+    function ValidateError(message) {
+      var _this;
+
+      var noKeyChain = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
       _classCallCheck(this, ValidateError);
 
-      return _super.apply(this, arguments);
+      _this = _super.call(this, message);
+      _this.noKeyChain = noKeyChain;
+      return _this;
     }
 
     _createClass(ValidateError, [{
@@ -382,10 +388,14 @@
             ctx = _this$errorConfig.ctx;
 
         if (isFunction(message)) {
-          return new ValidateError(message.call(ctx, originMessage));
+          return new ValidateError(message.call(ctx, originMessage), true);
         }
 
-        return new ValidateError(message || originMessage);
+        if (message) {
+          return new ValidateError(message, true);
+        }
+
+        return new ValidateError(originMessage);
       }
     }]);
 
@@ -1529,6 +1539,10 @@
             }
           } catch (error) {
             if (error instanceof ValidateError) {
+              if (error.noKeyChain) {
+                throw new Error(error.message);
+              }
+
               var keyChainStr = getKeyStr([].concat(_toConsumableArray(keyChain), [{
                 type: 'prop',
                 key: key
@@ -1664,6 +1678,10 @@
               }
             } catch (error) {
               if (error instanceof ValidateError) {
+                if (error.noKeyChain) {
+                  throw new Error(error.message);
+                }
+
                 var keyChainStr = getKeyStr([].concat(_toConsumableArray(keyChain), [{
                   type: 'index',
                   key: i
