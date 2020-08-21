@@ -133,4 +133,43 @@ describe('other test', () => {
     expect(isInt(1.2)).to.be.false;
     expect(isInt(2)).to.be.true;
   });
+
+  it('object custom error should drop key chain', () => {
+    const obj = {
+      objProp: {
+        name: 123
+      }
+    };
+    const schema = racoon.object({
+      objProp: racoon.object({
+        name: racoon
+          .string()
+          .error('custom error')
+      })
+    });
+    expect(() => schema.validate(obj)).to.throw(/^custom error$/);
+  });
+
+  it('array custom error should drop key chain', () => {
+    const obj1 = {
+      objProp: {
+        names: ['abc', 123]
+      }
+    };
+    const obj2 = {
+      objProp: {
+        names: ['abc', null]
+      }
+    };
+    const schema = racoon.object({
+      objProp: racoon.object({
+        names: racoon
+          .array(
+            racoon.string().error('custom error 1').required().error('custom error 2')
+          )
+      })
+    });
+    expect(() => schema.validate(obj1)).to.throw(/^custom error 1$/);
+    expect(() => schema.validate(obj2)).to.throw(/^custom error 2$/);
+  });
 });
