@@ -15,3 +15,6 @@
 ### 1.2.1 (Aug 19, 2020)
 - Remove `Symbol` from code
 - Remove some useless code
+
+### 1.2.2 (Aug 21, 2020)
+- Fix problem that custom error message contains key chain
