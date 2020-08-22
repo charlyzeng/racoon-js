@@ -63,6 +63,68 @@ describe('`number` function test', () => {
     expect(schema3.validate(-Infinity)).to.eq(-Infinity);
   });
 
+  it('`parseString` should parse detected value by Number', () => {
+    const schema1 = racoon.number().allowString();
+    {
+      const { error, value } = schema1.validateSilent('123');
+      expect(error).to.be.undefined;
+      expect(value).to.eq(123);
+      expect(schema1.validate('123')).to.eq(123);
+    }
+
+    {
+      const { error, value } = schema1.validateSilent('123.');
+      expect(error).to.be.undefined;
+      expect(value).to.eq(123);
+      expect(schema1.validate('123.')).to.eq(123);
+    }
+
+    {
+      const { error, value } = schema1.validateSilent('.123');
+      expect(error).to.be.undefined;
+      expect(value).to.eq(0.123);
+      expect(schema1.validate('.123')).to.eq(0.123);
+    }
+
+    {
+      const { error, value } = schema1.validateSilent('-.123');
+      expect(error).to.be.undefined;
+      expect(value).to.eq(-0.123);
+      expect(schema1.validate('-.123')).to.eq(-0.123);
+    }
+
+    {
+      const { error, value } = schema1.validateSilent('+.123');
+      expect(error).to.be.undefined;
+      expect(value).to.eq(0.123);
+      expect(schema1.validate('+.123')).to.eq(0.123);
+    }
+
+    {
+      const { error, value } = schema1.validateSilent('abc');
+      expect(error.message).contain('value should be typeof number');
+      expect(value).to.eq('abc');
+      expect(() => schema1.validate('abc')).to.throw('value should be typeof number');
+    }
+
+    {
+      const str = new Array(9999).fill(9).join('');
+      const { error, value } = schema1.validateSilent(str);
+      expect(error.message).contain('value is not allowed to be Infinity');
+      expect(value).to.eq(str);
+      expect(() => schema1.validate(str)).to.throw('value is not allowed to be Infinity');
+    }
+
+    const schema2 = racoon.number().allowString().allowInfinity();
+    {
+      const str = new Array(9999).fill(9).join('');
+      const { error, value } = schema2.validateSilent(str);
+      expect(error).to.be.undefined;
+      expect(value).to.eq(Infinity);
+      expect(schema2.validate(str)).to.eq(Infinity);
+    }
+  });
+
   it('`required` should restrict value to be required and accept custom error', () => {
     const schema1 = racoon.number().required().error('custom error 1');
     expect(schema1.validate(1)).to.eq(1);
