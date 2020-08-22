@@ -10,13 +10,18 @@ describe('`any` function test', () => {
     expect(schema.validate(1)).to.eq(1);
     expect(schema.validate(2.2)).to.eq(2.2);
     expect(schema.validate('abc')).to.eq('abc');
+
+    const emptyObj = {};
+    expect(schema.validate(emptyObj)).to.eq(emptyObj);
+    const emptyArray = [];
+    expect(schema.validate(emptyArray)).to.eq(emptyArray);
     const obj = {
       prop1: 1,
       prop2: [
         {
           prop3: 2,
           prop4: {
-            prop5: []
+            prop5: [1, { a: 'a', b: 'b' }]
           }
         }
       ]
@@ -30,12 +35,23 @@ describe('`any` function test', () => {
     expect(schema.validate(1)).to.be.eq(1);
   });
 
-  it('`enum` should restrict enum type', () => {
+  it('`enum` should restrict enum type and accept custom error', () => {
     const schema = racoon.any().enum(1, 'abc', false);
     expect(schema.validate(1)).to.eq(1);
     expect(schema.validate('abc')).to.eq('abc');
     expect(schema.validate(false)).to.be.false;
     expect(() => schema.validate(3)).to.throw('value should be one of [1,"abc",false]');
+
+    schema.error('custom error');
+    expect(() => schema.validate(3)).to.throw(/^custom error$/);
+  });
+
+  it('`enum` should restrict enum type and accept custom error', () => {
+    const schema = racoon.any().enum(1, 'abc', false).error('custom error');
+    expect(schema.validate(1)).to.eq(1);
+    expect(schema.validate('abc')).to.eq('abc');
+    expect(schema.validate(false)).to.be.false;
+    expect(() => schema.validate(3)).to.throw(/^custom error$/);
   });
 
   it('`required` restrict data is required', () => {
@@ -73,14 +89,6 @@ describe('`any` function test', () => {
     expect(() => schema2.validate([])).to.throw(/^custom error 2$/);
     expect(() => schema2.validate('')).to.throw(/^custom error 2$/);
     expect(() => schema2.validate(NaN)).to.throw(/^custom error 2$/);
-  });
-
-  it('`enum` should restrict enum type and accept custom error', () => {
-    const schema = racoon.any().enum(1, 'abc', false).error('custom error');
-    expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate('abc')).to.eq('abc');
-    expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(3)).to.throw(/^custom error$/);
   });
 
   it('`custom` should restrict with custom function', () => {
