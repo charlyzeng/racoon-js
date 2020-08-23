@@ -35,7 +35,7 @@ describe('`any` function test', () => {
     expect(schema.validate(1)).to.be.eq(1);
   });
 
-  it('`enum` should restrict enum type and accept custom error', () => {
+  it('`enum` should restrict enum type', () => {
     const schema = racoon.any().enum(1, 'abc', false);
     expect(schema.validate(1)).to.eq(1);
     expect(schema.validate('abc')).to.eq('abc');
@@ -185,5 +185,58 @@ describe('`any` function test', () => {
     expect(() => schema.validate(5)).to.throw(/^error2$/);
     expect(() => schema.validate(null)).to.throw(/^error4$/);
     expect(() => schema.validate(2)).to.throw(/^error3$/);
+  });
+
+  it('complex scene 3', () => {
+    const schema = racoon
+      .any()
+      .error('error1')
+      .enum(1, 2, 3)
+      .custom((val) => {
+        if (val % 2 === 1) {
+          return true;
+        }
+        throw new Error('even error');
+      })
+      .error('error2')
+      .required(true)
+      .error('error3')
+      .errorForAll('error for all');
+    expect(schema.validate(1)).to.be.eq(1);
+    expect(() => schema.validate(null)).to.throw(/^error3$/);
+    expect(() => schema.validate(5)).to.throw(/^error for all$/);
+  });
+
+  it('complex scene 4', () => {
+    const obj = {
+      getMessage(message) {
+        return this.getMessagePrivate(message);
+      },
+      getMessagePrivate(message) {
+        return `prefix ${message}`;
+      }
+    };
+    const schema = racoon
+      .any()
+      .error('error1')
+      .enum(1, 2, 3)
+      .custom((val) => {
+        if (val % 2 === 1) {
+          return true;
+        }
+        throw new Error('even error');
+      })
+      .error('error2')
+      .required(true)
+      .error('error3')
+      .errorForAll(
+        obj.getMessage,
+        obj
+      );
+    expect(schema.validate(1)).to.be.eq(1);
+    expect(() => schema.validate(null)).to.throw(/^error3$/);
+    expect(() => schema.validate(5)).to.throw('prefix value should be one of [1,2,3]');
+    const { error } = schema.validateSilent(5);
+    expect(error.message).to.eq('prefix value should be one of [1,2,3]');
   });
 });

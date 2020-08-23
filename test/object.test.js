@@ -38,6 +38,23 @@ describe('`object` function test', () => {
     ).to.throw(/^custom error$/);
   });
 
+  it('should restrict the basic type and accept custom error and error for all', () => {
+    const schema = racoon
+      .object()
+      .custom((obj) => {
+        if (Object.keys(obj).length === 1) {
+          return true;
+        }
+        throw new Error('custom error');
+      })
+      .error('custom error')
+      .errorForAll('error for all');
+    expect(schema.validate()).to.be.undefined;
+    expect(schema.validate(null)).to.be.null;
+    expect(() => schema.validate({})).to.throw(/^custom error$/);
+    expect(() => schema.validate(1)).to.throw(/^error for all$/);
+  });
+
   it('`default` should make a default return when value is undefined/null/empty', () => {
     const schema1 = racoon.object().default(() => ({ a: 1 }));
     expect(schema1.validate()).to.deep.eq({ a: 1 });

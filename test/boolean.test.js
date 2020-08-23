@@ -79,4 +79,18 @@ describe('`boolean` function test', () => {
     expect(() => schema.validate(1)).to.throw(/^error1$/);
     expect(() => schema.validate(null)).to.throw(/^error2$/);
   });
+
+  it('complex scene 4', () => {
+    const schema = racoon
+      .boolean()
+      .error('error1')
+      .enum(true)
+      .required()
+      .error('error2')
+      .errorForAll('error for all');
+    expect(schema.validate(true)).to.be.true;
+    expect(() => schema.validate(1)).to.throw(/^error1$/);
+    expect(() => schema.validate(null)).to.throw(/^error2$/);
+    expect(() => schema.validate(false)).to.throw('error for all');
+  });
 });

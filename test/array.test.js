@@ -197,4 +197,72 @@ describe('`array` function test', () => {
     expect(schema2.validate(null)).to.deep.eq({ code: 100, value: [1, 2] });
     expect(schema2.validate([])).to.deep.eq({ code: 100, value: [1, 2] });
   });
+
+  it('complex scene 1', () => {
+    const schema = racoon.array(
+      racoon.array(
+        racoon.array(
+          racoon.array(
+            racoon.number()
+          )
+        )
+      )
+    );
+    const array1 = [
+      [
+        [
+          [
+            1, 2, 3
+          ]
+        ]
+      ]
+    ];
+    const array1Clone = JSON.parse(JSON.stringify(array1));
+    expect(schema.validate(array1)).deep.eq(array1Clone);
+
+    const array2 = [
+      [
+        [
+          [
+            1, 2, 3, 'abc', 5
+          ]
+        ]
+      ]
+    ];
+    expect(() => schema.validate(array2)).to.throw('"[0][0][0][3]": value should be typeof number');
+  });
+
+  it('complex scene 2', () => {
+    const schema = racoon
+      .array()
+      .error('error1')
+      .min(2)
+      .max(3)
+      .error('error2')
+      .errorForAll('error for all');
+    expect(() => schema.validate({})).to.throw('error1');
+    expect(() => schema.validate([1, 2, 3, 4])).to.throw('error2');
+    expect(() => schema.validate([1])).to.throw('error for all');
+  });
+
+  it('complex scene 3', () => {
+    const obj = {
+      getMessage(message) {
+        return this.getMessagePrivate(message);
+      },
+      getMessagePrivate(message) {
+        return `prefix ${message}`;
+      }
+    };
+    const schema = racoon
+      .array()
+      .error('error1')
+      .min(2)
+      .max(3)
+      .error('error2')
+      .errorForAll(obj.getMessage, obj);
+    expect(() => schema.validate({})).to.throw('error1');
+    expect(() => schema.validate([1, 2, 3, 4])).to.throw('error2');
+    expect(() => schema.validate([1])).to.throw('prefix value length should greater than or equal 2');
+  });
 });

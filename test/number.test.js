@@ -369,4 +369,36 @@ describe('`number` function test', () => {
     expect(() => schema.validate(6)).to.throw('error6');
     expect(() => schema.validate(null)).to.throw('error7');
   });
+
+  it('complex scene 5', () => {
+    const schema = racoon
+      .number()
+      .error('error1')
+      .int()
+      .error('error2')
+      .min(0, false)
+      .max(10, true)
+      .custom((val) => {
+        if (val === 10) {
+          throw new Error('value can not be 10');
+        }
+        return true;
+      })
+      .error('error5')
+      .enum(1, 2, 3, 5, 10)
+      .allowNaN()
+      .required(true)
+      .error('error7')
+      .errorForAll('error for all');
+
+    expect(schema.validate(1)).to.eq(1);
+    expect(schema.validate(3)).to.eq(3);
+    expect(() => schema.validate('1.0')).to.throw('error1');
+    expect(() => schema.validate(2.2)).to.throw('error2');
+    expect(() => schema.validate(-1)).to.throw('error for all');
+    expect(() => schema.validate(11)).to.throw('error for all');
+    expect(() => schema.validate(10)).to.throw('error5');
+    expect(() => schema.validate(6)).to.throw('error for all');
+    expect(() => schema.validate(null)).to.throw('error7');
+  });
 });

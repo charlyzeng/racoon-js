@@ -208,4 +208,28 @@ describe('`string` function test', () => {
     expect(() => schema.validate('')).to.throw('error4');
     expect(() => schema.validate('12345')).to.throw('error5');
   });
+
+  it('complex scene 3', () => {
+    const schema = racoon
+      .string()
+      .min(2, false)
+      .error('error2')
+      .max(5)
+      .error('error3')
+      .required(true)
+      .custom((val) => {
+        if (val === '12345') {
+          throw new Error('e');
+        }
+        return true;
+      })
+      .errorForAll('error for all');
+
+    expect(schema.validate('abcde')).to.eq('abcde');
+    expect(() => schema.validate(1)).to.throw('error for all');
+    expect(() => schema.validate('ab')).to.throw('error2');
+    expect(() => schema.validate('abcdef')).to.throw('error3');
+    expect(() => schema.validate('')).to.throw('error for all');
+    expect(() => schema.validate('12345')).to.throw('error for all');
+  });
 });
