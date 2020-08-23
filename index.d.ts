@@ -71,6 +71,8 @@ export interface SchemaNumber extends SchemaBase<number> {
   allowNaN(): this;
 
   allowInfinity(): this;
+
+  allowString(): this;
 }
 
 export interface SchemaObject extends SchemaBase<object> {
