@@ -343,12 +343,24 @@
     function ValidateError(message) {
       var _this;
 
-      var noKeyChain = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       _classCallCheck(this, ValidateError);
 
       _this = _super.call(this, message);
+      _this.noKeyChain = false;
+      _this["final"] = false;
+
+      var _options$noKeyChain = options.noKeyChain,
+          noKeyChain = _options$noKeyChain === void 0 ? false : _options$noKeyChain,
+          _options$final = options["final"],
+          _final = _options$final === void 0 ? false : _options$final,
+          _options$custom = options.custom,
+          custom = _options$custom === void 0 ? false : _options$custom;
+
       _this.noKeyChain = noKeyChain;
+      _this["final"] = _final;
+      _this.custom = custom;
       return _this;
     }
 
@@ -388,11 +400,17 @@
             ctx = _this$errorConfig.ctx;
 
         if (isFunction(message)) {
-          return new ValidateError(message.call(ctx, originMessage), true);
+          return new ValidateError(message.call(ctx, originMessage), {
+            noKeyChain: true,
+            custom: true
+          });
         }
 
-        if (message) {
-          return new ValidateError(message, true);
+        if (isString(message) && message) {
+          return new ValidateError(message, {
+            noKeyChain: true,
+            custom: true
+          });
         }
 
         return new ValidateError(originMessage);
@@ -706,7 +724,11 @@
       key: "validate",
       value: function validate(val) {
         try {
-          this.restrictFn.call(this.ctx, val);
+          var result = this.restrictFn.call(this.ctx, val);
+
+          if (isString(result) && result) {
+            throw this.getError(result);
+          }
         } catch (error) {
           throw this.getError(error.message);
         }
@@ -737,6 +759,11 @@
           return val;
         }
       };
+      this.errorForAllConfig = {
+        enable: false,
+        ctx: undefined,
+        message: ''
+      };
     }
 
     _createClass(TypeBase, [{
@@ -759,6 +786,16 @@
       key: "error",
       value: function error(message, ctx) {
         this.currentRestrict.setErrorMessage(message, ctx);
+        return this;
+      }
+    }, {
+      key: "errorForAll",
+      value: function errorForAll(message, ctx) {
+        this.errorForAllConfig = {
+          enable: true,
+          message: message,
+          ctx: ctx
+        };
         return this;
       }
     }, {
@@ -843,6 +880,28 @@
         return formatter.call(ctx, val);
       }
     }, {
+      key: "getErrorForAll",
+      value: function getErrorForAll(originalMessage) {
+        var _this$errorForAllConf = this.errorForAllConfig,
+            enable = _this$errorForAllConf.enable,
+            ctx = _this$errorForAllConf.ctx,
+            message = _this$errorForAllConf.message;
+
+        if (enable !== true) {
+          return null;
+        }
+
+        if (isString(message) && message) {
+          return new ValidateError(message);
+        }
+
+        if (isFunction(message)) {
+          return new ValidateError(message.call(ctx, originalMessage));
+        }
+
+        return null;
+      }
+    }, {
       key: "checkType",
       value: function checkType(val) {
         return this.typeRestrict.validate(val);
@@ -872,10 +931,24 @@
           return this.getReturnValue(val);
         }
 
-        this.checkType(val);
-        this.checkRequired(val);
-        this.checkRestricts(val);
-        return this.getReturnValue(val);
+        try {
+          this.checkType(val);
+          this.checkRequired(val);
+          this.checkRestricts(val);
+          return this.getReturnValue(val);
+        } catch (error) {
+          if (error.custom === true) {
+            throw error;
+          }
+
+          var errorForAll = this.getErrorForAll(error.message);
+
+          if (errorForAll) {
+            throw errorForAll;
+          }
+
+          throw error;
+        }
       }
     }, {
       key: "validateSilent",
@@ -896,6 +969,8 @@
     return TypeBase;
   }();
 
+  var NUMBER_REG = /^[+-]?\d*\.?\d*$/;
+
   var TypeNumber = /*#__PURE__*/function (_TypeBase) {
     _inherits(TypeNumber, _TypeBase);
 
@@ -908,6 +983,7 @@
 
       _this = _super.call(this);
       _this.type = TYPE.number;
+      _this.isAllowString = false;
       _this.typeRestrict = new RestrictNumberType();
       _this.currentRestrict = _this.typeRestrict;
       return _this;
@@ -981,6 +1057,12 @@
         return this;
       }
     }, {
+      key: "allowString",
+      value: function allowString() {
+        this.isAllowString = true;
+        return this;
+      }
+    }, {
       key: "min",
       value: function min(_min) {
         var closed = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -1005,6 +1087,15 @@
         this.restricts.push(restrict);
         this.currentRestrict = restrict;
         return this;
+      }
+    }, {
+      key: "validate",
+      value: function validate(val) {
+        if (this.isAllowString && NUMBER_REG.test(val)) {
+          val = Number(val);
+        }
+
+        return _get(_getPrototypeOf(TypeNumber.prototype), "validate", this).call(this, val);
       }
     }]);
 
@@ -1538,20 +1629,24 @@
               result[key] = schema.validate(obj[key]);
             }
           } catch (error) {
-            if (error instanceof ValidateError) {
-              if (error.noKeyChain) {
-                throw new Error(error.message);
-              }
-
-              var keyChainStr = getKeyStr([].concat(_toConsumableArray(keyChain), [{
-                type: 'prop',
-                key: key
-              }]));
-              keyChainStr = "\"".concat(keyChainStr, "\": ");
-              throw new Error("".concat(keyChainStr).concat(error.message));
-            } else {
+            if (error["final"]) {
               throw error;
             }
+
+            if (error.noKeyChain) {
+              throw new ValidateError(error.message, {
+                "final": true
+              });
+            }
+
+            var keyChainStr = getKeyStr([].concat(_toConsumableArray(keyChain), [{
+              type: 'prop',
+              key: key
+            }]));
+            keyChainStr = "\"".concat(keyChainStr, "\": ");
+            throw new ValidateError("".concat(keyChainStr).concat(error.message), {
+              "final": true
+            });
           }
         }
 
@@ -1564,10 +1659,24 @@
           return this.getReturnValue(obj);
         }
 
-        this.checkRequired(obj);
-        this.checkType(obj);
-        this.checkRestricts(obj);
-        return this.getReturnValue(this.validateRecurse(obj));
+        try {
+          this.checkRequired(obj);
+          this.checkType(obj);
+          this.checkRestricts(obj);
+          return this.getReturnValue(this.validateRecurse(obj));
+        } catch (error) {
+          if (error.custom === true) {
+            throw error;
+          }
+
+          var errorForAll = this.getErrorForAll(error.message);
+
+          if (errorForAll) {
+            throw errorForAll;
+          }
+
+          throw error;
+        }
       }
     }, {
       key: "keys",
@@ -1677,20 +1786,24 @@
                 result.push(itemSchema.validate(array[i]));
               }
             } catch (error) {
-              if (error instanceof ValidateError) {
-                if (error.noKeyChain) {
-                  throw new Error(error.message);
-                }
-
-                var keyChainStr = getKeyStr([].concat(_toConsumableArray(keyChain), [{
-                  type: 'index',
-                  key: i
-                }]));
-                keyChainStr = "\"".concat(keyChainStr, "\": ");
-                throw new Error("".concat(keyChainStr).concat(error.message));
-              } else {
+              if (error["final"]) {
                 throw error;
               }
+
+              if (error.noKeyChain) {
+                throw new ValidateError(error.message, {
+                  "final": true
+                });
+              }
+
+              var keyChainStr = getKeyStr([].concat(_toConsumableArray(keyChain), [{
+                type: 'index',
+                key: i
+              }]));
+              keyChainStr = "\"".concat(keyChainStr, "\": ");
+              throw new ValidateError("".concat(keyChainStr).concat(error.message), {
+                "final": true
+              });
             }
           }
 
@@ -1706,10 +1819,24 @@
           return this.getReturnValue(array);
         }
 
-        this.checkRequired(array);
-        this.checkType(array);
-        this.checkRestricts(array);
-        return this.getReturnValue(this.validateRecurse(array));
+        try {
+          this.checkRequired(array);
+          this.checkType(array);
+          this.checkRestricts(array);
+          return this.getReturnValue(this.validateRecurse(array));
+        } catch (error) {
+          if (error.custom === true) {
+            throw error;
+          }
+
+          var errorForAll = this.getErrorForAll(error.message);
+
+          if (errorForAll) {
+            throw errorForAll;
+          }
+
+          throw error;
+        }
       }
     }]);
 
