@@ -18,3 +18,8 @@
 
 ### 1.2.2 (Aug 21, 2020)
 - Fix problem that custom error message contains key chain
+
+### 1.3.0 (Aug 23, 2020)
+- Add `allowString` method for number type
+- Add `errorForAll` method for all type
+- The callback arg of `custom` method support to return a string to respect failure reason
