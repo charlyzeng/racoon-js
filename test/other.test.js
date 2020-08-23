@@ -190,4 +190,24 @@ describe('other test', () => {
     expect(() => schema.validate(obj1)).to.throw(/^custom error 1$/);
     expect(() => schema.validate(obj2)).to.throw(/^custom error 2$/);
   });
+
+  it('`custom` callback can return string to respect failure reason', () => {
+    const schema1 = racoon.number().custom((num) => {
+      if (num % 2 !== 0) {
+        return 'value should be even';
+      }
+      return true;
+    });
+    expect(schema1.validate(2)).to.eq(2);
+    expect(() => schema1.validate(3)).to.throw('value should be even');
+
+    const schema2 = racoon.object().custom((obj) => {
+      if (Object.keys(obj).length === 1) {
+        return 'object keys can not be 1';
+      }
+      return true;
+    });
+    expect(schema2.validate({ a: 1, b: 2 })).to.deep.eq({ a: 1, b: 2 });
+    expect(() => schema2.validate({ a: 1 })).to.throw('object keys can not be 1');
+  });
 });
