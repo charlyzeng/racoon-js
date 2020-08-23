@@ -28,6 +28,8 @@ export interface SchemaBase<T> {
 
   error(message: string | ErrorCallback, ctx?: any): this;
 
+  errorForAll(message: string | ErrorCallback, ctx?: any): this;
+
   format(callback: FormatCallback<T>, ctx?: any): this;
 
   validate(value: any): any;
