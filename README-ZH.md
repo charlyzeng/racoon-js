@@ -1,7 +1,7 @@
-## [中文](README-ZH.md)
+## [English](README.md)
 
 # racoon-js
-A tiny tool for checking and cleaning json data.
+一款轻量级的JSON数据格式校验、清洗工具库。
 
 [![npm version](https://img.shields.io/npm/v/racoon-js.svg?style=flat-square)](https://www.npmjs.com/package/racoon-js)
 [![build status](https://img.shields.io/travis/charlyzeng/racoon-js/master.svg?style=flat-square)](https://travis-ci.org/charlyzeng/racoon-js)
@@ -10,39 +10,39 @@ A tiny tool for checking and cleaning json data.
 [![npm downloads](https://img.shields.io/npm/dm/racoon-js.svg?style=flat-square)](http://npm-stat.com/charts.html?package=racoon-js)
 
 ## Table Of Contents
-- [API Document](https://racoon-js.gitbook.io/en)
-- [Features](#features)
-- [Browser Support](#browser-support)
-- [Installing](#installing)
-- [Example](#example)
+- [API文档](https://racoon-js.gitbook.io/zh)
+- [特性](#特性)
+- [浏览器支持](#浏览器支持)
+- [安装](#安装)
+- [示例](#示例)
 
-## Features
-- 🌈 Support both browser and node.
-- ❄️ The data format can be flexibly defined, and any level of attribute nesting of object and array is supported.
-- 🔗 Support chain call without paying attention to call sequence.
+## 特性
+- 🌈 同时支持浏览器和Node端。
+- ❄️ 可以灵活定义数据格式，并且支持任意层级的对象、数组格式定义。
+- 🔗 支持链式调用，且无需关注调用顺序。
 
-## Browser Support
+## 浏览器支持
 ![Chrome](https://raw.github.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png) | ![Safari](https://raw.github.com/alrra/browser-logos/master/src/safari/safari_48x48.png) | ![Opera](https://raw.github.com/alrra/browser-logos/master/src/opera/opera_48x48.png) | ![Edge](https://raw.github.com/alrra/browser-logos/master/src/edge/edge_48x48.png) | ![IE](https://raw.github.com/alrra/browser-logos/master/src/archive/internet-explorer_9-11/internet-explorer_9-11_48x48.png) |
 --- | --- | --- | --- | --- | --- |
 Latest ✔ | Latest ✔ | Latest ✔ | Latest ✔ | Latest ✔ | 10 ✔ |
 
-## Installing
-Using npm:
+## 安装
+使用npm
 ```bash
 $ npm install racoon-js
 ```
 
-Using yarn:
+使用yarn:
 ```bash
 yarn add racoon-js
 ```
 
-Using cdn:
+使用CDN:
 ```html
 <script src="//cdn.jsdelivr.net/npm/racoon-js@latest/dist/racoon.min.js"></script>
 ```
 
-## Example
+## 示例
 ```javascript
 import racoon from 'racoon-js';
 
