@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import racoon from '../lib';
 import { isInt } from '../lib/utils/is';
+import ValidateError from '../lib/utils/validate-error';
 
 describe('other test', () => {
   it('`format` should bind ctx', () => {
@@ -148,6 +149,23 @@ describe('other test', () => {
       })
     });
     expect(() => schema.validate(obj)).to.throw(/^custom error$/);
+  });
+
+  it('object validate error should be an instance of ValidateError', () => {
+    const obj = {
+      objProp: {
+        name: 123
+      }
+    };
+    const schema = racoon.object({
+      objProp: racoon.object({
+        name: racoon
+          .string()
+          .error('custom error')
+      })
+    });
+    const { error } = schema.validateSilent(obj);
+    expect(error).instanceOf(ValidateError);
   });
 
   it('array custom error should drop key chain', () => {
