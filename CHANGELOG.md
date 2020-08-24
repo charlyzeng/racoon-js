@@ -23,3 +23,6 @@
 - Add `allowString` method for number type
 - Add `errorForAll` method for all type
 - The callback arg of `custom` method support to return a string to respect failure reason
+
+### 1.3.1 (Aug 24, 2020)
+- Update `index.d.ts` to fix grammar prompt
