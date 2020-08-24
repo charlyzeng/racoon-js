@@ -57,12 +57,16 @@ export interface SchemaBoolean extends SchemaBase<boolean> {
   default(value: DefaultCallback<boolean> | any, ctx?: any);
   
   required(): this;
+
+  enum(...values: boolean[]): this;
 }
 
 export interface SchemaNumber extends SchemaBase<number> {
   default(value: DefaultCallback<number> | any, ctx?: any);
 
   required(): this;
+
+  enum(...values: number[]): this;
 
   min(min: number, strict?: boolean): this;
 
@@ -84,6 +88,8 @@ export interface SchemaObject extends SchemaBase<object> {
 }
 
 export interface SchemaString extends SchemaBase<string> {
+  enum(...values: string[]): this;
+
   min(min: number, strict?: boolean): this;
 
   max(max: number, strict?: boolean): this;
