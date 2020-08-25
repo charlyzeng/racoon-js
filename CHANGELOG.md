@@ -26,3 +26,6 @@
 
 ### 1.3.1 (Aug 24, 2020)
 - Update `index.d.ts` to fix grammar prompt
+
+### 1.3.2 (Aug 25, 2020)
+- Fix the problem that `allowString` accept empty-string and the objects which `toString` return a number style string
