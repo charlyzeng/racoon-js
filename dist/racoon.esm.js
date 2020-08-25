@@ -1085,7 +1085,7 @@ var TypeNumber = /*#__PURE__*/function (_TypeBase) {
   }, {
     key: "validate",
     value: function validate(val) {
-      if (this.isAllowString && NUMBER_REG.test(val)) {
+      if (this.isAllowString && isString(val) && val && NUMBER_REG.test(val)) {
         val = Number(val);
       }
 
