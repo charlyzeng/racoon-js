@@ -148,6 +148,9 @@ describe('`string` function test', () => {
 
     const schema2 = racoon.string().required(true);
     expect(() => schema2.validate('')).to.throw('value is required and should not be empty');
+
+    const schema3 = racoon.string().min(0, false).required();
+    expect(() => schema3.validate('')).to.throw('value length should greater than 0');
   });
 
   it('`required` should restrict data is required and accept custom error', () => {

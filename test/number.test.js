@@ -49,7 +49,7 @@ describe('`number` function test', () => {
     expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null');
   });
 
-  it('`allowInfinity` should work with required', () => {
+  it('`allowString` should work with required', () => {
     const schema1 = racoon.number().allowInfinity();
     expect(schema1.validate(Infinity)).to.eq(Infinity);
     expect(schema1.validate(-Infinity)).to.eq(-Infinity);
@@ -63,7 +63,7 @@ describe('`number` function test', () => {
     expect(schema3.validate(-Infinity)).to.eq(-Infinity);
   });
 
-  it('`parseString` should parse detected value by Number', () => {
+  it('`allowString` should parse detected value by Number', () => {
     const schema1 = racoon.number().allowString();
     {
       const { error, value } = schema1.validateSilent('123');
@@ -123,6 +123,22 @@ describe('`number` function test', () => {
       expect(value).to.eq(Infinity);
       expect(schema2.validate(str)).to.eq(Infinity);
     }
+  });
+
+  it('`allowString` should throw error when the detected value is non-number or non-string', () => {
+    const data = {
+      toString() {
+        return '123';
+      }
+    };
+    const schema = racoon.number().allowString();
+    expect(() => schema.validate(data)).to.throw('value should be typeof number');
+    expect(() => schema.validate({})).to.throw('value should be typeof number');
+  });
+
+  it('`allowString` should throw error when the detected value is empty-string', () => {
+    const schema = racoon.number().allowString();
+    expect(() => schema.validate('')).to.throw('value should be typeof number');
   });
 
   it('`required` should restrict value to be required and accept custom error', () => {
