@@ -249,6 +249,30 @@ describe('`object` function test', () => {
         }
       })
     ).to.throw('"cars[0][\'prop.with.dot\']": the key `name` is not allowed');
+
+    const schema6 = racoon.object({
+      name: racoon.string(),
+      age: racoon.number().int()
+    }).stripUnknown();
+    expect(schema6.validate({ name: 'Tom' })).to.deep.eq({ name: 'Tom' });
+
+    const schema7 = racoon.object({
+      name: racoon.string(),
+      age: racoon.number().int()
+    }).allowUnknown().stripUnknown();
+    expect(schema7.validate({ name: 'Tom' })).to.deep.eq({ name: 'Tom' });
+
+    const schema8 = racoon.object({
+      name: racoon.string(),
+      age: racoon.number().int()
+    }).allowUnknown();
+    expect(schema8.validate({ name: 'Tom' })).to.deep.eq({ name: 'Tom' });
+
+    const schema9 = racoon.object({
+      name: racoon.string(),
+      age: racoon.number().int()
+    });
+    expect(schema9.validate({ name: 'Tom' })).to.deep.eq({ name: 'Tom' });
   });
 
   it('complex scene 1', () => {
