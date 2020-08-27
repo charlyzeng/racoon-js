@@ -29,3 +29,6 @@
 
 ### 1.3.2 (Aug 25, 2020)
 - Fix the problem that `allowString` accept empty-string and the objects which `toString` return a number style string
+
+### 1.3.3 (Aug 27, 2020)
+- Fix bug about `object` and `array`
