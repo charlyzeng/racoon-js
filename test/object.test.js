@@ -363,4 +363,148 @@ describe('`object` function test', () => {
     const clone = JSON.parse(JSON.stringify(data));
     expect(schema.validate(data)).to.deep.eq(clone);
   });
+
+  it('complex scene 4', () => {
+    const schema = racoon.object({
+      user: racoon.object({
+        name: racoon.string()
+      })
+    }).required(true);
+    const data = {
+      user: null
+    };
+    expect(schema.validate(data)).to.deep.eq({ user: null });
+  });
+
+  it('complex scene 5', () => {
+    const schema1 = racoon.object({
+      prop1: racoon.object({
+        prop2: racoon.array(
+          racoon.object({
+            prop4: racoon.number().int().required()
+          }).required(true)
+        )
+      })
+    }).required(true);
+    const data1 = {
+      prop1: {
+        prop2: [{ prop4: 1 }, { prop4: 1.2 }]
+      }
+    };
+    expect(() => schema1.validate(data1)).to.throw('"prop1.prop2[1].prop4": value should be an int');
+
+    const schema2 = racoon.object({
+      prop1: racoon.object({
+        prop2: racoon.array(
+          racoon.object({
+            prop4: racoon
+              .number()
+              .error('error1')
+              .int()
+              .error('error2')
+              .required()
+              .error('error3')
+          }).required(true)
+        )
+      })
+    }).required(true);
+    const data2 = {
+      prop1: {
+        prop2: [{ prop4: 1 }, { prop4: 1.2 }]
+      }
+    };
+    expect(() => schema2.validate(data2)).to.throw('error2');
+    data2.prop1.prop2[1].prop4 = 'abc';
+    expect(() => schema2.validate(data2)).to.throw('error1');
+    data2.prop1.prop2[1].prop4 = null;
+    expect(() => schema2.validate(data2)).to.throw('error3');
+
+    data2.prop1.prop2[1] = null;
+    expect(() => schema2.validate(data2)).to.throw('"prop1.prop2[1]": value is required and should not be empty');
+
+    const schema3 = racoon.object({
+      prop1: racoon.object({
+        prop2: racoon.array(
+          racoon.object({
+            prop4: racoon
+              .number()
+              .error('error1')
+              .int()
+              .error('error2')
+              .required()
+              .error('error3')
+          }).required(true).error('error4').errorForAll('error for all')
+        )
+      })
+    }).required(true);
+
+    const data3 = {
+      prop1: {
+        prop2: [null]
+      }
+    };
+    expect(() => schema3.validate(data3)).to.throw('error4');
+    expect(() => schema3.validate([])).to.throw('value should be typeof object');
+    data3.prop1.prop2[0] = [];
+    expect(() => schema3.validate(data3)).to.throw('error for all');
+  });
+
+  it('complex scene 6', () => {
+    const data = {
+      style: {
+        color: 'red'
+      }
+    };
+    const schema = racoon.object({
+      style: racoon
+        .object({
+          color: racoon.string()
+        })
+        .format(s => (s && s.color ? JSON.stringify(s) : undefined))
+    });
+    expect(schema.validate(data)).to.deep.eq({
+      style: '{"color":"red"}'
+    });
+  });
+
+  it('complex scene 7', () => {
+    const data = {
+      prop1: {
+        prop2: {
+          prop3: [
+            [
+              {
+                prop4: 'abc'
+              }
+            ]
+          ]
+        }
+      }
+    };
+    const schema = racoon.object({
+      prop1: racoon.object({
+        prop2: racoon.object({
+          prop3: racoon.array(
+            racoon.array(
+              racoon.object({
+                prop4: racoon.string()
+              })
+            ).format(a => JSON.stringify(a))
+          )
+        }).format(obj => JSON.stringify(obj))
+      })
+    });
+    expect(schema.validate(data)).to.deep.eq({
+      prop1: {
+        prop2: '{"prop3":["[{\\"prop4\\":\\"abc\\"}]"]}'
+      }
+    });
+
+    data.prop1.prop2.prop3[0].push(null, undefined);
+    expect(schema.validate(data)).to.deep.eq({
+      prop1: {
+        prop2: '{"prop3":["[{\\"prop4\\":\\"abc\\"},null,null]"]}'
+      }
+    });
+  });
 });
