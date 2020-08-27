@@ -32,3 +32,6 @@
 
 ### 1.3.3 (Aug 27, 2020)
 - Fix bug about `object` and `array`
+
+### 1.3.3 (Aug 27, 2020)
+- Fix bug when use `stripUnkown`
