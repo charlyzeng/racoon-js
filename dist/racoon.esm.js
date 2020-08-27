@@ -1615,7 +1615,7 @@ var TypeObject = /*#__PURE__*/function (_TypeBase) {
 
         try {
           if (schema.type === TYPE.object || schema.type === TYPE.array) {
-            result[key] = schema.validateRecurse(obj[key], [].concat(_toConsumableArray(keyChain), [{
+            result[key] = schema.validate(obj[key], 'USE_KEY_CHAIN', [].concat(_toConsumableArray(keyChain), [{
               key: key,
               type: 'prop'
             }]));
@@ -1648,16 +1648,16 @@ var TypeObject = /*#__PURE__*/function (_TypeBase) {
     }
   }, {
     key: "validate",
-    value: function validate(obj) {
+    value: function validate(obj, useKeyChain, keyChain) {
       if (!this.requiredRestrict && isNotRequired(obj)) {
         return this.getReturnValue(obj);
       }
 
       try {
-        this.checkRequired(obj);
         this.checkType(obj);
+        this.checkRequired(obj);
         this.checkRestricts(obj);
-        return this.getReturnValue(this.validateRecurse(obj));
+        return this.getReturnValue(this.validateRecurse(obj, useKeyChain === 'USE_KEY_CHAIN' ? keyChain : undefined));
       } catch (error) {
         if (error.custom === true) {
           throw error;
@@ -1772,7 +1772,7 @@ var TypeArray = /*#__PURE__*/function (_TypeBase) {
         for (var i = 0; i < array.length; i += 1) {
           try {
             if (itemSchema.type === TYPE.array || itemSchema.type === TYPE.object) {
-              result.push(itemSchema.validateRecurse(array[i], [].concat(_toConsumableArray(keyChain), [{
+              result.push(itemSchema.validate(array[i], 'USE_KEY_CHAIN', [].concat(_toConsumableArray(keyChain), [{
                 type: 'index',
                 key: i
               }])));
@@ -1808,16 +1808,16 @@ var TypeArray = /*#__PURE__*/function (_TypeBase) {
     }
   }, {
     key: "validate",
-    value: function validate(array) {
+    value: function validate(array, useKeyChain, keyChain) {
       if (!this.requiredRestrict && isNotRequired(array)) {
         return this.getReturnValue(array);
       }
 
       try {
-        this.checkRequired(array);
         this.checkType(array);
+        this.checkRequired(array);
         this.checkRestricts(array);
-        return this.getReturnValue(this.validateRecurse(array));
+        return this.getReturnValue(this.validateRecurse(array, useKeyChain === 'USE_KEY_CHAIN' ? keyChain : undefined));
       } catch (error) {
         if (error.custom === true) {
           throw error;
