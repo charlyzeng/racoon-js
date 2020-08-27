@@ -1598,19 +1598,17 @@
         }
 
         var result = {};
-        var keys;
-
-        if (this.isStripUnknown === true) {
-          keys = this.keys;
-        } else {
-          keys = Object.keys(obj);
-        }
+        var keys = Object.keys(obj);
 
         for (var i = 0; i < keys.length; i += 1) {
           var key = keys[i];
           var schema = this.config[key];
 
           if (this.hasKey(key) === false) {
+            if (this.isStripUnknown === true) {
+              continue;
+            }
+
             if (this.isAllowUnknown === true) {
               result[key] = obj[key];
               continue;
