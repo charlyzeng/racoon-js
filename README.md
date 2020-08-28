@@ -1,7 +1,7 @@
 ## [中文](README-ZH.md)
 
 # racoon-js
-A tiny tool for checking and cleaning json data.
+The easiest to use and powerful data validate and formatter library for JS.
 
 [![npm version](https://img.shields.io/npm/v/racoon-js.svg?style=flat-square)](https://www.npmjs.com/package/racoon-js)
 [![build status](https://img.shields.io/travis/charlyzeng/racoon-js/master.svg?style=flat-square)](https://travis-ci.org/charlyzeng/racoon-js)
@@ -20,6 +20,7 @@ A tiny tool for checking and cleaning json data.
 - 🌈 Support both browser and node.
 - ❄️ The data format can be flexibly defined, and any level of attribute nesting of object and array is supported.
 - 🔗 Support chain call without paying attention to call sequence.
+- ✨ Error message can be easily customed.
 
 ## Browser Support
 ![Chrome](https://raw.github.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png) | ![Safari](https://raw.github.com/alrra/browser-logos/master/src/safari/safari_48x48.png) | ![Opera](https://raw.github.com/alrra/browser-logos/master/src/opera/opera_48x48.png) | ![Edge](https://raw.github.com/alrra/browser-logos/master/src/edge/edge_48x48.png) | ![IE](https://raw.github.com/alrra/browser-logos/master/src/archive/internet-explorer_9-11/internet-explorer_9-11_48x48.png) |
@@ -39,8 +40,9 @@ yarn add racoon-js
 
 Using cdn:
 ```html
-<script src="//cdn.jsdelivr.net/npm/racoon-js@latest/dist/racoon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/racoon-js@latest/dist/racoon.min.js"></script>
 ```
+The JS from cdn is _21kB_, and it will be only _4.6kB_ after be compressed by gzip.
 
 ## Example
 ```javascript

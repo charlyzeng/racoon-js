@@ -1,7 +1,7 @@
 {
   "name": "racoon-js",
   "version": "1.3.4",
-  "description": "A tiny tool for checking and cleaning json data.",
+  "description": "The easiest to use and powerful data validate and formatter library for JS.",
   "main": "dist/racoon.umd.js",
   "module": "dist/racoon.esm.js",
   "scripts": {
@@ -16,18 +16,12 @@
     "url": "git+https://github.com/charlyzeng/racoon-js.git"
   },
   "keywords": [
-    "check",
     "validate",
-    "json",
-    "data",
+    "validation",
+    "schema",
     "check",
-    "json",
-    "check",
-    "data",
-    "validate",
-    "json",
-    "validate",
-    "data"
+    "clean",
+    "racoon"
   ],
   "author": "charlyzeng <chenglezeng@tencent.com>",
   "license": "MIT",
