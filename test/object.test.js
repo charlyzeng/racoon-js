@@ -72,6 +72,25 @@ describe('`object` function test', () => {
     expect(schema2.validate({ a: 2 })).to.deep.eq({ a: 2 });
   });
 
+  it('`defualt` should effect for nested property', () => {
+    const schema = racoon.object({
+      name: racoon.string().default(''),
+      age: racoon.number().default(1),
+      gender: racoon.boolean().default(true),
+      friends: racoon.array().default(() => ['Tom', 'Jack']),
+      book: racoon.object().default(() => ({ title: 'book title' })),
+    });
+    expect(schema.validate({})).deep.eq({
+      name: '',
+      age: 1,
+      gender: true,
+      friends: ['Tom', 'Jack'],
+      book: {
+        title: 'book title'
+      }
+    });
+  });
+
   it('`format` should set return value formatter', () => {
     const schema1 = racoon.object().default({ c: 'c' }).format(value => ({ code: 100, value }));
     expect(schema1.validate({ a: 1, b: 2 })).to.deep.eq({ code: 100, value: { a: 1, b: 2 } });
