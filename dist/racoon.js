@@ -1528,6 +1528,8 @@
     return RestrictObjectType;
   }(RestrictBase);
 
+  var hasOwnProperty = Object.prototype.hasOwnProperty;
+
   var TypeObject = /*#__PURE__*/function (_TypeBase) {
     _inherits(TypeObject, _TypeBase);
 
@@ -1560,11 +1562,6 @@
     }
 
     _createClass(TypeObject, [{
-      key: "hasKey",
-      value: function hasKey(key) {
-        return this.keys.includes(key);
-      }
-    }, {
       key: "getReturnValue",
       value: function getReturnValue(val) {
         return this.getReturnValueWithStrict(val);
@@ -1598,45 +1595,28 @@
         }
 
         var result = {};
-        var keys = Object.keys(obj);
-        var otherKeys = Object.keys(this.config).filter(function (key) {
-          return keys.includes(key) === false;
-        });
+        var keys = Object.keys(this.config);
 
-        for (var i = 0; i < otherKeys.length; i += 1) {
-          var key = otherKeys[i];
+        for (var i = 0; i < keys.length; i += 1) {
+          var key = keys[i];
           var schema = this.config[key];
 
-          if (schema.defaultConfig.enable) {
-            result[key] = schema.calcDefaultValue(undefined);
-          }
-        }
-
-        for (var _i = 0; _i < keys.length; _i += 1) {
-          var _key = keys[_i];
-          var _schema = this.config[_key];
-
-          if (this.hasKey(_key) === false) {
-            if (this.isStripUnknown === true) {
-              continue;
+          if (!schema.requiredRestrict && !hasOwnProperty.call(obj, key)) {
+            if (schema.defaultConfig.enable) {
+              result[key] = schema.calcDefaultValue(undefined);
             }
 
-            if (this.isAllowUnknown === true) {
-              result[_key] = obj[_key];
-              continue;
-            }
-
-            throw new ValidateError("the key `".concat(_key, "` is not allowed"));
+            continue;
           }
 
           try {
-            if (_schema.type === TYPE.object || _schema.type === TYPE.array) {
-              result[_key] = _schema.validate(obj[_key], 'USE_KEY_CHAIN', [].concat(_toConsumableArray(keyChain), [{
-                key: _key,
+            if (schema.type === TYPE.object || schema.type === TYPE.array) {
+              result[key] = schema.validate(obj[key], 'USE_KEY_CHAIN', [].concat(_toConsumableArray(keyChain), [{
+                key: key,
                 type: 'prop'
               }]));
             } else {
-              result[_key] = _schema.validate(obj[_key]);
+              result[key] = schema.validate(obj[key]);
             }
           } catch (error) {
             if (error["final"]) {
@@ -1651,12 +1631,28 @@
 
             var keyChainStr = getKeyStr([].concat(_toConsumableArray(keyChain), [{
               type: 'prop',
-              key: _key
+              key: key
             }]));
             keyChainStr = "\"".concat(keyChainStr, "\": ");
             throw new ValidateError("".concat(keyChainStr).concat(error.message), {
               "final": true
             });
+          }
+        }
+
+        if (!this.isStripUnknown) {
+          var otherKeys = Object.keys(obj).filter(function (key) {
+            return keys.includes(key) === false;
+          });
+
+          for (var _i = 0; _i < otherKeys.length; _i += 1) {
+            var _key = otherKeys[_i];
+
+            if (!this.isAllowUnknown) {
+              throw new ValidateError("the key `".concat(_key, "` is not allowed"));
+            }
+
+            result[_key] = obj[_key];
           }
         }
 
@@ -1687,11 +1683,6 @@
 
           throw error;
         }
-      }
-    }, {
-      key: "keys",
-      get: function get() {
-        return Object.keys(this.config);
       }
     }]);
 
