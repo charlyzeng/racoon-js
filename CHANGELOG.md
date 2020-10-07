@@ -41,3 +41,6 @@
 
 ### 1.3.6 (Oct 7, 2020)
 - Fix bug of `default not effect` when key not exist in object.
+
+### 1.3.7 (Oct 7, 2020)
+- Fix bug of `required not effect` when key not exist in object.
