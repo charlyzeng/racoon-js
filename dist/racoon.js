@@ -1599,32 +1599,44 @@
 
         var result = {};
         var keys = Object.keys(obj);
+        var otherKeys = Object.keys(this.config).filter(function (key) {
+          return keys.includes(key) === false;
+        });
 
-        for (var i = 0; i < keys.length; i += 1) {
-          var key = keys[i];
+        for (var i = 0; i < otherKeys.length; i += 1) {
+          var key = otherKeys[i];
           var schema = this.config[key];
 
-          if (this.hasKey(key) === false) {
+          if (schema.defaultConfig.enable) {
+            result[key] = schema.calcDefaultValue(undefined);
+          }
+        }
+
+        for (var _i = 0; _i < keys.length; _i += 1) {
+          var _key = keys[_i];
+          var _schema = this.config[_key];
+
+          if (this.hasKey(_key) === false) {
             if (this.isStripUnknown === true) {
               continue;
             }
 
             if (this.isAllowUnknown === true) {
-              result[key] = obj[key];
+              result[_key] = obj[_key];
               continue;
             }
 
-            throw new ValidateError("the key `".concat(key, "` is not allowed"));
+            throw new ValidateError("the key `".concat(_key, "` is not allowed"));
           }
 
           try {
-            if (schema.type === TYPE.object || schema.type === TYPE.array) {
-              result[key] = schema.validate(obj[key], 'USE_KEY_CHAIN', [].concat(_toConsumableArray(keyChain), [{
-                key: key,
+            if (_schema.type === TYPE.object || _schema.type === TYPE.array) {
+              result[_key] = _schema.validate(obj[_key], 'USE_KEY_CHAIN', [].concat(_toConsumableArray(keyChain), [{
+                key: _key,
                 type: 'prop'
               }]));
             } else {
-              result[key] = schema.validate(obj[key]);
+              result[_key] = _schema.validate(obj[_key]);
             }
           } catch (error) {
             if (error["final"]) {
@@ -1639,7 +1651,7 @@
 
             var keyChainStr = getKeyStr([].concat(_toConsumableArray(keyChain), [{
               type: 'prop',
-              key: key
+              key: _key
             }]));
             keyChainStr = "\"".concat(keyChainStr, "\": ");
             throw new ValidateError("".concat(keyChainStr).concat(error.message), {
