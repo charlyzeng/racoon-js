@@ -1,6 +1,6 @@
 {
   "name": "racoon-js",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "description": "The easiest to use and powerful data validate and formatter library for JS.",
   "main": "dist/racoon.umd.js",
   "module": "dist/racoon.esm.js",
