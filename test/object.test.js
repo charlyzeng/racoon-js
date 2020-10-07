@@ -72,7 +72,7 @@ describe('`object` function test', () => {
     expect(schema2.validate({ a: 2 })).to.deep.eq({ a: 2 });
   });
 
-  it('`defualt` should effect for nested property', () => {
+  it('`defualt` should work for nested property', () => {
     const schema = racoon.object({
       name: racoon.string().default(''),
       age: racoon.number().default(1),
@@ -103,6 +103,15 @@ describe('`object` function test', () => {
     expect(schema2.validate(undefined)).to.deep.eq({ code: 100, value: { c: 'c' } });
     expect(schema2.validate(null)).to.deep.eq({ code: 100, value: { c: 'c' } });
     expect(schema2.validate({})).to.deep.eq({ code: 100, value: { c: 'c' } });
+  });
+
+  it('`required` should work for nested property', () => {
+    const schema1 = racoon.object({
+      name: racoon.string().required()
+    });
+    expect(() => schema1.validate({ name: null })).to.throw('"name": value is required and should not be undefined/null');
+    expect(() => schema1.validate({ name: undefined })).to.throw('"name": value is required and should not be undefined/null');
+    expect(() => schema1.validate({})).to.throw('"name": value is required and should not be undefined/null');
   });
 
   it('`required` should restrict data is required', () => {
