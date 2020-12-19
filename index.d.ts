@@ -20,7 +20,7 @@ export interface SilentResult {
 }
 
 export interface SchemaBase<T> {
-  required(strict: boolean): this;
+  required(strict?: boolean): this;
 
   custom(restrictFn: CustomRestrictCallback<T>, ctx?: any): this;
 
@@ -108,3 +108,5 @@ export function number(): SchemaNumber;
 export function object(config?: ObjectConfig): SchemaObject;
 
 export function string(): SchemaString;
+
+export type Schema = SchemaAny | SchemaArray | SchemaBoolean | SchemaNumber | SchemaObject | SchemaString;

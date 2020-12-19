@@ -44,3 +44,6 @@
 
 ### 1.3.7 (Oct 7, 2020)
 - Fix bug of `required not effect` when key not exist in object.
+
+### 1.3.8 (Dec 19, 2020)
+- Modify `index.d.ts`.
