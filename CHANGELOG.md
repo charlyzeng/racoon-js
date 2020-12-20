@@ -47,3 +47,6 @@
 
 ### 1.3.8 (Dec 19, 2020)
 - Modify `index.d.ts`.
+
+### 1.3.9 (Dec 20, 2020)
+- Modify `index.d.ts`.

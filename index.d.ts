@@ -1,5 +1,5 @@
 export interface CustomRestrictCallback<T> {
-  (value: T): boolean;
+  (value: T): any;
 }
 
 export interface DefaultCallback<T> {
