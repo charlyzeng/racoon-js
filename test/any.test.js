@@ -21,10 +21,10 @@ describe('`any` function test', () => {
         {
           prop3: 2,
           prop4: {
-            prop5: [1, { a: 'a', b: 'b' }]
-          }
-        }
-      ]
+            prop5: [1, { a: 'a', b: 'b' }],
+          },
+        },
+      ],
     };
     const clone = JSON.parse(JSON.stringify(obj));
     expect(schema.validate(obj)).to.deep.eq(clone);
@@ -47,7 +47,8 @@ describe('`any` function test', () => {
   });
 
   it('`enum` should restrict enum type and accept custom error', () => {
-    const schema = racoon.any().enum(1, 'abc', false).error('custom error');
+    const schema = racoon.any().enum(1, 'abc', false)
+      .error('custom error');
     expect(schema.validate(1)).to.eq(1);
     expect(schema.validate('abc')).to.eq('abc');
     expect(schema.validate(false)).to.be.false;
@@ -73,7 +74,8 @@ describe('`any` function test', () => {
   });
 
   it('`required` restrict data is required and accept custom data', () => {
-    const schema1 = racoon.any().required().error('custom error 1');
+    const schema1 = racoon.any().required()
+      .error('custom error 1');
     expect(schema1.validate(false)).to.be.false;
     expect(schema1.validate(0)).to.eq(0);
     expect(schema1.validate('')).to.eq('');
@@ -81,7 +83,8 @@ describe('`any` function test', () => {
     expect(() => schema1.validate(undefined)).to.throw(/^custom error 1$/);
     expect(() => schema1.validate(null)).to.throw(/^custom error 1$/);
 
-    const schema2 = racoon.any().required(true).error('custom error 2');
+    const schema2 = racoon.any().required(true)
+      .error('custom error 2');
     expect(schema2.validate(1)).to.be.eq(1);
     expect(schema2.validate(false)).to.be.false;
     expect(schema2.validate(0)).to.eq(0);
@@ -108,7 +111,8 @@ describe('`any` function test', () => {
         return true;
       }
       throw new Error('odd error');
-    }).error('custom error');
+    })
+      .error('custom error');
     expect(schema.validate(6)).to.eq(6);
     expect(() => schema.validate(3)).to.throw('custom error');
   });
@@ -142,7 +146,7 @@ describe('`any` function test', () => {
   });
 
   it('`format` should set return value formatter', () => {
-    const schema = racoon.any().format((val) => val + 1);
+    const schema = racoon.any().format(val => val + 1);
     expect(schema.validate(1)).to.be.eq(2);
   });
 
@@ -214,7 +218,7 @@ describe('`any` function test', () => {
       },
       getMessagePrivate(message) {
         return `prefix ${message}`;
-      }
+      },
     };
     const schema = racoon
       .any()
@@ -231,7 +235,7 @@ describe('`any` function test', () => {
       .error('error3')
       .errorForAll(
         obj.getMessage,
-        obj
+        obj,
       );
     expect(schema.validate(1)).to.be.eq(1);
     expect(() => schema.validate(null)).to.throw(/^error3$/);

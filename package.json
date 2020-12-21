@@ -5,10 +5,11 @@
   "main": "dist/racoon.umd.js",
   "module": "dist/racoon.esm.js",
   "scripts": {
-    "lint": "npx eslint lib test",
-    "test": "npx mocha --require @babel/register test/**/*.test.js",
-    "cover": "npx nyc --reporter text npm test && npx nyc npm test > /dev/null",
-    "build": "npx rollup -c rollup.config.js",
+    "lint": "eslint lib test",
+    "lint:fix": "eslint lib test --fix",
+    "test": "mocha --require @babel/register test/**/*.test.js",
+    "cover": "nyc --reporter text npm test && nyc npm test > /dev/null",
+    "build": "rollup -c rollup.config.js",
     "coveralls": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
@@ -37,11 +38,11 @@
     "@babel/register": "^7.10.5",
     "@rollup/plugin-babel": "^5.2.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
+    "@tencent/eslint-config-tencent": "^0.12.2",
     "babel-eslint": "^10.1.0",
     "chai": "^4.2.0",
     "coveralls": "^3.1.0",
     "eslint": "^7.4.0",
-    "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
     "mocha": "^8.1.0",
     "nyc": "^15.1.0",

@@ -30,12 +30,14 @@ describe('`array` function test', () => {
   });
 
   it('`min` should restrict the min length of array and accept custom error', () => {
-    const schema1 = racoon.array().min(3).error('custom error');
+    const schema1 = racoon.array().min(3)
+      .error('custom error');
     expect(schema1.validate([1, 2, 3])).to.deep.eq([1, 2, 3]);
     expect(schema1.validate(['a', 'b', 'c', 'd'])).to.deep.eq(['a', 'b', 'c', 'd']);
     expect(() => schema1.validate([1, 2])).to.throw(/^custom error$/);
 
-    const schema2 = racoon.array().min(3, false).error('custom error');
+    const schema2 = racoon.array().min(3, false)
+      .error('custom error');
     expect(schema2.validate([1, 2, 3, 4])).to.deep.eq([1, 2, 3, 4]);
     expect(() => schema2.validate([1, 2, 3])).to.throw(/^custom error$/);
   });
@@ -52,12 +54,14 @@ describe('`array` function test', () => {
   });
 
   it('`max` mshould restrict the max length of array and accept custom error', () => {
-    const schema1 = racoon.array().max(3).error('custom error');
+    const schema1 = racoon.array().max(3)
+      .error('custom error');
     expect(schema1.validate([1, 2, 3])).to.deep.eq([1, 2, 3]);
     expect(schema1.validate([1, 2])).to.deep.eq([1, 2]);
     expect(() => schema1.validate([1, 2, 3, 4])).to.throw(/^custom error$/);
 
-    const schema2 = racoon.array().max(3, false).error('custom error');
+    const schema2 = racoon.array().max(3, false)
+      .error('custom error');
     expect(schema2.validate([1, 2])).to.deep.eq([1, 2]);
     expect(() => schema2.validate([1, 2, 3])).to.throw(/^custom error$/);
   });
@@ -80,7 +84,8 @@ describe('`array` function test', () => {
         return true;
       }
       throw new Error('value should starts with "ab"');
-    }).error('custom error');
+    })
+      .error('custom error');
     expect(schema.validate(['a', 'b'])).to.deep.eq(['a', 'b']);
     expect(schema.validate(['a', 'b', 'c'])).to.deep.eq(['a', 'b', 'c']);
     expect(() => schema.validate(['b', 'c'])).to.throw(/^custom error$/);
@@ -101,13 +106,15 @@ describe('`array` function test', () => {
   });
 
   it('`required` should restrict the data is required and accept custom error', () => {
-    const schema1 = racoon.array().required().error('custom error 1');
+    const schema1 = racoon.array().required()
+      .error('custom error 1');
     expect(schema1.validate([])).to.deep.eq([]);
     expect(schema1.validate([1, 'abc'])).to.deep.eq([1, 'abc']);
     expect(() => schema1.validate()).to.throw(/^custom error 1$/);
     expect(() => schema1.validate(null)).to.throw(/^custom error 1$/);
 
-    const schema2 = racoon.array().required(true).error('custom error 2');
+    const schema2 = racoon.array().required(true)
+      .error('custom error 2');
     expect(schema2.validate([1, 'abc'])).to.deep.eq([1, 'abc']);
     expect(() => schema2.validate()).to.throw(/^custom error 2$/);
     expect(() => schema2.validate(null)).to.throw(/^custom error 2$/);
@@ -115,26 +122,24 @@ describe('`array` function test', () => {
   });
 
   it('`constructor` should restrict the type of array item', () => {
-    const schema = racoon.array(
-      racoon.number().int().min(1).max(6, false)
-    );
+    const schema = racoon.array(racoon.number().int()
+      .min(1)
+      .max(6, false));
     expect(schema.validate([1, 2, 3, 4, 5])).to.deep.eq([1, 2, 3, 4, 5]);
-    expect(
-      () => schema.validate([1, 2, 3, 4, 5, 6])
-    ).to.throw('"[5]": value should less than 6');
+    expect(() => schema.validate([1, 2, 3, 4, 5, 6])).to.throw('"[5]": value should less than 6');
 
-    const schema2 = racoon.array(
-      racoon.object({
-        name: racoon.string().min(3).max(5).required(),
-        age: racoon.number().int().min(1).max(199),
-        friends: racoon.array(
-          racoon.object({
-            gender: racoon.boolean().required(),
-            age: racoon.number().max(199)
-          })
-        )
-      })
-    );
+    const schema2 = racoon.array(racoon.object({
+      name: racoon.string().min(3)
+        .max(5)
+        .required(),
+      age: racoon.number().int()
+        .min(1)
+        .max(199),
+      friends: racoon.array(racoon.object({
+        gender: racoon.boolean().required(),
+        age: racoon.number().max(199),
+      })),
+    }));
     const array = [
       {
         name: 'Tom',
@@ -142,9 +147,9 @@ describe('`array` function test', () => {
         friends: [
           {
             age: 2,
-            gender: false
-          }
-        ]
+            gender: false,
+          },
+        ],
       },
       {
         name: 'Jack',
@@ -152,14 +157,14 @@ describe('`array` function test', () => {
         friends: [
           {
             age: 2,
-            gender: true
+            gender: true,
           },
           {
             gender: false,
-            age: 199
-          }
-        ]
-      }
+            age: 199,
+          },
+        ],
+      },
     ];
     const clone = JSON.parse(JSON.stringify(array));
     expect(schema2.validate(array)).to.deep.eq(clone);
@@ -185,13 +190,15 @@ describe('`array` function test', () => {
   });
 
   it('`format` should set return value formatter', () => {
-    const schema = racoon.array().default([1, 2]).format(value => ({ code: 100, value }));
+    const schema = racoon.array().default([1, 2])
+      .format(value => ({ code: 100, value }));
     expect(schema.validate([1])).to.deep.eq({ code: 100, value: [1] });
     expect(schema.validate(undefined)).to.deep.eq({ code: 100, value: [1, 2] });
     expect(schema.validate(null)).to.deep.eq({ code: 100, value: [1, 2] });
     expect(schema.validate([])).to.deep.eq({ code: 100, value: [] });
 
-    const schema2 = racoon.array().default([1, 2], true).format(value => ({ code: 100, value }));
+    const schema2 = racoon.array().default([1, 2], true)
+      .format(value => ({ code: 100, value }));
     expect(schema2.validate([1])).to.deep.eq({ code: 100, value: [1] });
     expect(schema2.validate(undefined)).to.deep.eq({ code: 100, value: [1, 2] });
     expect(schema2.validate(null)).to.deep.eq({ code: 100, value: [1, 2] });
@@ -199,23 +206,15 @@ describe('`array` function test', () => {
   });
 
   it('complex scene 1', () => {
-    const schema = racoon.array(
-      racoon.array(
-        racoon.array(
-          racoon.array(
-            racoon.number()
-          )
-        )
-      )
-    );
+    const schema = racoon.array(racoon.array(racoon.array(racoon.array(racoon.number()))));
     const array1 = [
       [
         [
           [
-            1, 2, 3
-          ]
-        ]
-      ]
+            1, 2, 3,
+          ],
+        ],
+      ],
     ];
     const array1Clone = JSON.parse(JSON.stringify(array1));
     expect(schema.validate(array1)).deep.eq(array1Clone);
@@ -224,10 +223,10 @@ describe('`array` function test', () => {
       [
         [
           [
-            1, 2, 3, 'abc', 5
-          ]
-        ]
-      ]
+            1, 2, 3, 'abc', 5,
+          ],
+        ],
+      ],
     ];
     expect(() => schema.validate(array2)).to.throw('"[0][0][0][3]": value should be typeof number');
   });
@@ -252,7 +251,7 @@ describe('`array` function test', () => {
       },
       getMessagePrivate(message) {
         return `prefix ${message}`;
-      }
+      },
     };
     const schema = racoon
       .array()

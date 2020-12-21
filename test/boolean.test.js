@@ -23,7 +23,8 @@ describe('`boolean` function test', () => {
   });
 
   it('`enum` should restrict the enum type and accept custom error', () => {
-    const schema = racoon.boolean().enum(false).error('custom error');
+    const schema = racoon.boolean().enum(false)
+      .error('custom error');
     expect(schema.validate(false)).to.be.false;
     expect(() => schema.validate(true)).to.throw(/^custom error$/);
   });
@@ -61,7 +62,8 @@ describe('`boolean` function test', () => {
   });
 
   it('complex scene 2', () => {
-    const schema = racoon.boolean().required().error('custom error');
+    const schema = racoon.boolean().required()
+      .error('custom error');
     expect(schema.validate(true)).to.be.true;
     expect(schema.validate(false)).to.be.false;
     expect(() => schema.validate(undefined)).to.throw(/^custom error$/);

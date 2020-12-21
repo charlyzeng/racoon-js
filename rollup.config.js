@@ -10,34 +10,34 @@ export default {
       file: main,
       format: 'umd',
       name: 'racoon',
-      sourcemap: 'source-map'
+      sourcemap: 'source-map',
     },
     {
       file: 'dist/racoon.js',
       format: 'umd',
       name: 'racoon',
-      sourcemap: 'source-map'
+      sourcemap: 'source-map',
     },
     {
       file: 'dist/racoon.min.js',
       format: 'umd',
       name: 'racoon',
       plugins: [terser()],
-      sourcemap: 'source-map'
+      sourcemap: 'source-map',
     },
     {
       file: module,
       format: 'esm',
-      sourcemap: 'source-map'
-    }
+      sourcemap: 'source-map',
+    },
   ],
   plugins: [
     resolve({
-      extensions: ['.js']
+      extensions: ['.js'],
     }),
     babel({
       babelHelpers: 'bundled',
-      extensions: ['.js']
-    })
-  ]
+      extensions: ['.js'],
+    }),
+  ],
 };

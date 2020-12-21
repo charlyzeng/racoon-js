@@ -22,7 +22,8 @@ describe('`string` function test', () => {
   });
 
   it('`enum` should restrict the enum type accept custom error', () => {
-    const schema = racoon.string().enum('a', 'b', 'c').error('custom error');
+    const schema = racoon.string().enum('a', 'b', 'c')
+      .error('custom error');
     expect(schema.validate('b')).to.eq('b');
     expect(() => schema.validate('d')).to.throw(/^custom error$/);
   });
@@ -47,7 +48,7 @@ describe('`string` function test', () => {
     expect(schema2.validate('other string')).to.eq('other string');
 
     let couter = 0;
-    const schema3 = racoon.string().default((val) => `${val}:${++couter}`, true);
+    const schema3 = racoon.string().default(val => `${val}:${++couter}`, true);
     expect(schema3.validate()).to.eq('undefined:1');
     expect(schema3.validate(undefined)).to.eq('undefined:2');
     expect(schema3.validate(null)).to.eq('null:3');
@@ -66,14 +67,16 @@ describe('`string` function test', () => {
     expect(schema.validate(undefined)).to.be.eq('#undefined');
     expect(schema.validate(null)).to.be.eq('#null');
 
-    const schema2 = racoon.string().default('default str').format(str => `#${str}`);
+    const schema2 = racoon.string().default('default str')
+      .format(str => `#${str}`);
     expect(schema2.validate('str')).to.be.eq('#str');
     expect(schema2.validate()).to.be.eq('#default str');
     expect(schema2.validate(undefined)).to.be.eq('#default str');
     expect(schema2.validate(null)).to.be.eq('#default str');
     expect(schema2.validate('')).to.be.eq('#');
 
-    const schema3 = racoon.string().default('default str', true).format(str => `#${str}`);
+    const schema3 = racoon.string().default('default str', true)
+      .format(str => `#${str}`);
     expect(schema3.validate('')).to.be.eq('#default str');
   });
 
@@ -93,12 +96,14 @@ describe('`string` function test', () => {
   });
 
   it('`min` restrict the min length of string and accept custom error', () => {
-    const schema1 = racoon.string().min(3).error('custom error 1');
+    const schema1 = racoon.string().min(3)
+      .error('custom error 1');
     expect(schema1.validate('abc')).to.eq('abc');
     expect(schema1.validate('abcd')).to.eq('abcd');
     expect(() => schema1.validate('ab')).to.throw(/^custom error 1$/);
 
-    const schema2 = racoon.string().min(3, false).error('custom error 2');
+    const schema2 = racoon.string().min(3, false)
+      .error('custom error 2');
     expect(schema2.validate('abcd')).to.eq('abcd');
     expect(() => schema2.validate('abc')).to.throw(/^custom error 2$/);
   });
@@ -119,12 +124,14 @@ describe('`string` function test', () => {
   });
 
   it('`max` restrict the max length of string and accept custom error', () => {
-    const schema1 = racoon.string().max(3).error('custom error 1');
+    const schema1 = racoon.string().max(3)
+      .error('custom error 1');
     expect(schema1.validate('abc')).to.eq('abc');
     expect(schema1.validate('ab')).to.eq('ab');
     expect(() => schema1.validate('abcd')).to.throw(/^custom error 1$/);
 
-    const schema2 = racoon.string().max(3, false).error('custom error 2');
+    const schema2 = racoon.string().max(3, false)
+      .error('custom error 2');
     expect(schema2.validate('ab')).to.eq('ab');
     expect(() => schema2.validate('abc')).to.throw(/^custom error 2$/);
   });
@@ -149,18 +156,21 @@ describe('`string` function test', () => {
     const schema2 = racoon.string().required(true);
     expect(() => schema2.validate('')).to.throw('value is required and should not be empty');
 
-    const schema3 = racoon.string().min(0, false).required();
+    const schema3 = racoon.string().min(0, false)
+      .required();
     expect(() => schema3.validate('')).to.throw('value length should greater than 0');
   });
 
   it('`required` should restrict data is required and accept custom error', () => {
-    const schema1 = racoon.string().required().error('custom error');
+    const schema1 = racoon.string().required()
+      .error('custom error');
     expect(schema1.validate('test')).to.eq('test');
     expect(() => schema1.validate()).to.throw(/^custom error$/);
     expect(() => schema1.validate(undefined)).to.throw(/^custom error$/);
     expect(() => schema1.validate(null)).to.throw(/^custom error$/);
 
-    const schema2 = racoon.string().required(true).error('custom error 2');
+    const schema2 = racoon.string().required(true)
+      .error('custom error 2');
     expect(() => schema2.validate('')).to.throw(/^custom error 2$/);
   });
 
@@ -177,7 +187,9 @@ describe('`string` function test', () => {
   });
 
   it('complex scene 1', () => {
-    const schema = racoon.string().min(2, false).max(5).required();
+    const schema = racoon.string().min(2, false)
+      .max(5)
+      .required();
     expect(schema.validate('abc')).to.eq('abc');
     expect(schema.validate('abcd')).to.eq('abcd');
     expect(schema.validate('abcde')).to.eq('abcde');

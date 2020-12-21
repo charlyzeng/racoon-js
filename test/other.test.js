@@ -11,7 +11,7 @@ describe('other test', () => {
       },
       abs(num) {
         return Math.abs(num);
-      }
+      },
     };
     const schema = racoon.number().format(obj.formatNum, obj);
     expect(schema.validate(1.2)).to.eq('1.20');
@@ -24,7 +24,7 @@ describe('other test', () => {
       },
       isEvenOrOne(num) {
         return this.isEven(num) || num === 1;
-      }
+      },
     };
     const schema = racoon.number().custom(obj.isEvenOrOne, obj);
     expect(schema.validate(2)).to.eq(2);
@@ -37,9 +37,10 @@ describe('other test', () => {
       },
       getDefaultInner() {
         return 1;
-      }
+      },
     };
-    const schema1 = racoon.number().allowNaN().default(obj.getDefault, obj);
+    const schema1 = racoon.number().allowNaN()
+      .default(obj.getDefault, obj);
     expect(schema1.validate(undefined)).to.eq(1);
     expect(schema1.validate(null)).to.eq(1);
     expect(schema1.validate(NaN)).to.eq(1);
@@ -101,7 +102,7 @@ describe('other test', () => {
       getMessage(message) {
         counter += 1;
         return `${message}#${counter}`;
-      }
+      },
     };
 
     const schema1 = racoon
@@ -138,15 +139,15 @@ describe('other test', () => {
   it('object custom error should drop key chain', () => {
     const obj = {
       objProp: {
-        name: 123
-      }
+        name: 123,
+      },
     };
     const schema = racoon.object({
       objProp: racoon.object({
         name: racoon
           .string()
-          .error('custom error')
-      })
+          .error('custom error'),
+      }),
     });
     expect(() => schema.validate(obj)).to.throw(/^custom error$/);
   });
@@ -154,15 +155,15 @@ describe('other test', () => {
   it('object validate error should be an instance of ValidateError', () => {
     const obj = {
       objProp: {
-        name: 123
-      }
+        name: 123,
+      },
     };
     const schema = racoon.object({
       objProp: racoon.object({
         name: racoon
           .string()
-          .error('custom error')
-      })
+          .error('custom error'),
+      }),
     });
     const { error } = schema.validateSilent(obj);
     expect(error).instanceOf(ValidateError);
@@ -171,21 +172,21 @@ describe('other test', () => {
   it('array custom error should drop key chain', () => {
     const obj1 = {
       objProp: {
-        names: ['abc', 123]
-      }
+        names: ['abc', 123],
+      },
     };
     const obj2 = {
       objProp: {
-        names: ['abc', null]
-      }
+        names: ['abc', null],
+      },
     };
     const schema = racoon.object({
       objProp: racoon.object({
         names: racoon
-          .array(
-            racoon.string().error('custom error 1').required().error('custom error 2')
-          )
-      })
+          .array(racoon.string().error('custom error 1')
+            .required()
+            .error('custom error 2')),
+      }),
     });
     expect(() => schema.validate(obj1)).to.throw(/^custom error 1$/);
     expect(() => schema.validate(obj2)).to.throw(/^custom error 2$/);
