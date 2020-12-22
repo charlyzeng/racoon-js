@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import racoon from '../lib';
-import { isInt } from '../lib/utils/is';
-import ValidateError from '../lib/utils/validate-error';
+import { isInt } from '../lib/util/is';
+import ValidateError from '../lib/util/validate-error';
 
 describe('other test', () => {
   it('`format` should bind ctx', () => {
