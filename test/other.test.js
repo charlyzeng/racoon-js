@@ -118,10 +118,10 @@ describe('other test', () => {
       .allowNaN()
       .error(obj.getErrorMessage, obj);
 
-    expect(() => schema1.validate('abc')).to.throw('value should be typeof number#1');
-    expect(() => schema1.validate(1.2)).to.throw('value should be an int#2');
-    expect(() => schema1.validate(0)).to.throw('value should greater than or equal 1#3');
-    expect(() => schema1.validate(6)).to.throw('value should less than or equal 5#4');
+    expect(() => schema1.validate('abc')).to.throw('value should be a type of number#1');
+    expect(() => schema1.validate(1.2)).to.throw('value should be an integer#2');
+    expect(() => schema1.validate(0)).to.throw('value should be greater than or equal to 1#3');
+    expect(() => schema1.validate(6)).to.throw('value should be less than or equal to 5#4');
     expect(() => schema1.validate(null)).to.throw('value is required and should not be undefined/null#5');
     expect(() => schema1.validate(undefined)).to.throw('value is required and should not be undefined/null#6');
     expect(() => schema1.validate(NaN)).to.throw('value is required and should not be NaN#7');

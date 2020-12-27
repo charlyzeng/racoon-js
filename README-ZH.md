@@ -90,7 +90,7 @@ try {
   });
 } catch (error) {
   console.error(error);
-  // Error: "favorite.book.title": value should be typeof string
+  // Error: "favorite.book.title": value should be a type of string
   // ↑↑↑ The error message can be customed
 }
 

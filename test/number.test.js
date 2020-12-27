@@ -1,447 +1,406 @@
 import { expect } from 'chai';
 import racoon from '../lib';
 
-describe('`number` function test', () => {
-  it('should restrict the basic type', () => {
-    const schema = racoon.number();
-    expect(schema.validate(0.1)).to.eq(0.1);
-    expect(() => schema.validate(NaN)).to.throw('value is not allowed to be NaN');
-    expect(() => schema.validate(Infinity)).to.throw('value is not allowed to be Infinity');
-    expect(() => schema.validate(-Infinity)).to.throw('value is not allowed to be Infinity');
-    expect(() => schema.validate('abc')).to.throw('value should be typeof number');
-  });
+describe('schema#number', () => {
+  describe('should restrict the detected value to be a type of number', () => {
+    it('without custom error', () => {
+      const schema = racoon.number();
 
-  it('`validateSilent` should work', () => {
-    const schema = racoon.number();
-    {
-      const { error, value } = schema.validateSilent(1);
-      expect(error).to.be.undefined;
-      expect(value).to.eq(1);
-    }
-    {
-      const { error, value } = schema.validateSilent('abc');
-      expect(error.toString()).to.contains('value should be typeof number');
-      expect(value).to.eq('abc');
-    }
-  });
-
-  it('should restrict the basic type and accept custom error', () => {
-    const schema = racoon.number().error('custom error');
-    expect(schema.validate(0.1)).to.eq(0.1);
-    expect(() => schema.validate(NaN)).to.throw(/^custom error$/);
-    expect(() => schema.validate(Infinity)).to.throw(/^custom error$/);
-    expect(() => schema.validate('abc')).to.throw(/^custom error$/);
-  });
-
-  it('`required` should restrict value to be required', () => {
-    const schema = racoon.number().required();
-    expect(schema.validate(1)).to.eq(1);
-    expect(() => schema.validate()).to.throw('value is required and should not be undefined/null');
-    expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null');
-    expect(() => schema.validate(NaN)).to.throw('value is not allowed to be NaN');
-  });
-
-  it('`allowNaN` should work with required', () => {
-    const schema = racoon.number().allowNaN()
-      .required();
-    expect(schema.validate(1)).to.eq(1);
-    expect(() => schema.validate(NaN)).to.throw('value is required and should not be NaN');
-    expect(() => schema.validate()).to.throw('value is required and should not be undefined/null');
-    expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null');
-  });
-
-  it('`allowString` should work with required', () => {
-    const schema1 = racoon.number().allowInfinity();
-    expect(schema1.validate(Infinity)).to.eq(Infinity);
-    expect(schema1.validate(-Infinity)).to.eq(-Infinity);
-
-    const schema2 = racoon.number().allowInfinity()
-      .required();
-    expect(schema2.validate(Infinity)).to.eq(Infinity);
-    expect(schema2.validate(-Infinity)).to.eq(-Infinity);
-
-    const schema3 = racoon.number().allowInfinity()
-      .required(true);
-    expect(schema3.validate(Infinity)).to.eq(Infinity);
-    expect(schema3.validate(-Infinity)).to.eq(-Infinity);
-  });
-
-  it('`allowString` should parse detected value by Number', () => {
-    const schema1 = racoon.number().allowString();
-    {
-      const { error, value } = schema1.validateSilent('123');
-      expect(error).to.be.undefined;
-      expect(value).to.eq(123);
-      expect(schema1.validate('123')).to.eq(123);
-    }
-
-    {
-      const { error, value } = schema1.validateSilent('123.');
-      expect(error).to.be.undefined;
-      expect(value).to.eq(123);
-      expect(schema1.validate('123.')).to.eq(123);
-    }
-
-    {
-      const { error, value } = schema1.validateSilent('.123');
-      expect(error).to.be.undefined;
-      expect(value).to.eq(0.123);
-      expect(schema1.validate('.123')).to.eq(0.123);
-    }
-
-    {
-      const { error, value } = schema1.validateSilent('-.123');
-      expect(error).to.be.undefined;
-      expect(value).to.eq(-0.123);
-      expect(schema1.validate('-.123')).to.eq(-0.123);
-    }
-
-    {
-      const { error, value } = schema1.validateSilent('+.123');
-      expect(error).to.be.undefined;
-      expect(value).to.eq(0.123);
-      expect(schema1.validate('+.123')).to.eq(0.123);
-    }
-
-    {
-      const { error, value } = schema1.validateSilent('abc');
-      expect(error.message).contain('value should be typeof number');
-      expect(value).to.eq('abc');
-      expect(() => schema1.validate('abc')).to.throw('value should be typeof number');
-    }
-
-    {
-      const str = new Array(9999).fill(9)
-        .join('');
-      const { error, value } = schema1.validateSilent(str);
-      expect(error.message).contain('value is not allowed to be Infinity');
-      expect(value).to.eq(str);
-      expect(() => schema1.validate(str)).to.throw('value is not allowed to be Infinity');
-    }
-
-    const schema2 = racoon.number().allowString()
-      .allowInfinity();
-    {
-      const str = new Array(9999).fill(9)
-        .join('');
-      const { error, value } = schema2.validateSilent(str);
-      expect(error).to.be.undefined;
-      expect(value).to.eq(Infinity);
-      expect(schema2.validate(str)).to.eq(Infinity);
-    }
-  });
-
-  it('`allowString` should throw error when the detected value is non-number or non-string', () => {
-    const data = {
-      toString() {
-        return '123';
-      },
-    };
-    const schema = racoon.number().allowString();
-    expect(() => schema.validate(data)).to.throw('value should be typeof number');
-    expect(() => schema.validate({})).to.throw('value should be typeof number');
-  });
-
-  it('`allowString` should throw error when the detected value is empty-string', () => {
-    const schema = racoon.number().allowString();
-    expect(() => schema.validate('')).to.throw('value should be typeof number');
-  });
-
-  it('`required` should restrict value to be required and accept custom error', () => {
-    const schema1 = racoon.number().required()
-      .error('custom error 1');
-    expect(schema1.validate(1)).to.eq(1);
-    expect(() => schema1.validate()).to.throw(/^custom error 1$/);
-    expect(() => schema1.validate(null)).to.throw(/^custom error 1$/);
-    expect(() => schema1.validate(NaN)).to.throw('value is not allowed to be NaN');
-
-    const schema2 = racoon.number().error('error1')
-      .required()
-      .error('error2');
-    expect(schema2.validate(1)).to.eq(1);
-    expect(() => schema2.validate()).to.throw(/^error2$/);
-    expect(() => schema2.validate(null)).to.throw(/^error2$/);
-    expect(() => schema2.validate(NaN)).to.throw(/^error1$/);
-
-    const schema3 = racoon
-      .number()
-      .allowNaN()
-      .error('error1')
-      .required()
-      .error('error2');
-    expect(schema3.validate(1)).to.eq(1);
-    expect(() => schema3.validate(NaN)).to.throw(/^error2$/);
-    expect(() => schema3.validate('abc')).to.throw(/^error1$/);
-    expect(() => schema3.validate()).to.throw(/^error2$/);
-    expect(() => schema3.validate(null)).to.throw(/^error2$/);
-  });
-
-  it('`custom` should deny non-function param', () => {
-    expect(() => racoon.number().custom([])).to.throw('`custom` must receive a Function parameter');
-  });
-
-  it('`enum` should deny empty param', () => {
-    expect(() => racoon.number().enum()).to.throw('enum arguments can not be empty');
-  });
-
-  it('`enum` should restrict enum type', () => {
-    const schema = racoon.number().enum(1, 5, 7)
-      .required();
-    expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate(5)).to.eq(5);
-    expect(schema.validate(7)).to.eq(7);
-    expect(() => schema.validate(3)).to.throw('value should be one of [1,5,7]');
-    expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null');
-  });
-
-  it('`enum` should restrict enum type and accept custom error', () => {
-    const schema = racoon.number().enum(1, 5, 7)
-      .error('custom error')
-      .required();
-    expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate(5)).to.eq(5);
-    expect(schema.validate(7)).to.eq(7);
-    expect(() => schema.validate(3)).to.throw(/^custom error$/);
-    expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null');
-  });
-
-  it('`min` should deny non-number param', () => {
-    expect(() => racoon.number().min('abc')).to.throw('`min` should be a number');
-  });
-
-  it('`min` should restrict the min value', () => {
-    const schema = racoon.number().min(1);
-    expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate(2)).to.eq(2);
-    expect(() => schema.validate(0)).to.throw('value should greater than or equal 1');
-
-    const schema2 = racoon.number().min(1, false);
-    expect(() => schema2.validate(1)).to.throw('value should greater than 1');
-    expect(schema2.validate(2)).to.eq(2);
-  });
-
-  it('`min` should restrict the min value and accept custom error', () => {
-    const schema1 = racoon.number().min(1)
-      .error('custom error 1');
-    expect(schema1.validate(1)).to.eq(1);
-    expect(schema1.validate(2)).to.eq(2);
-    expect(() => schema1.validate(0)).to.throw(/^custom error 1$/);
-
-    const schema2 = racoon.number().min(1, false)
-      .error('custom error 2');
-    expect(schema2.validate(2)).to.eq(2);
-    expect(() => schema2.validate(1)).to.throw(/^custom error 2$/);
-  });
-
-  it('`max` should deny non-number param', () => {
-    expect(() => racoon.number().max('abc')).to.throw('`max` should be typeof number');
-  });
-
-  it('`max` should restrict the max value', () => {
-    const schema = racoon.number().max(1);
-    expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate(0)).to.eq(0);
-    expect(() => schema.validate(2)).to.throw('value should less than or equal 1');
-
-    const schema2 = racoon.number().max(1, false);
-    expect(() => schema2.validate(1)).to.throw('value should less than 1');
-    expect(schema2.validate(0)).to.eq(0);
-  });
-
-  it('`max` should restrict the max value and accept custom error', () => {
-    const schema = racoon.number().max(1)
-      .error('custom error 1');
-    expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate(0)).to.eq(0);
-    expect(() => schema.validate(2)).to.throw(/^custom error 1$/);
-
-    const schema2 = racoon.number().max(1, false)
-      .error('custom error 2');
-    expect(schema2.validate(0)).to.eq(0);
-    expect(() => schema2.validate(1)).to.throw(/^custom error 2$/);
-  });
-
-  it('`int` should restrict the number be integer and accept custom error', () => {
-    const schema = racoon.number().int()
-      .error('custom error');
-    expect(schema.validate(0)).to.eq(0);
-    expect(schema.validate(-1)).to.eq(-1);
-    expect(schema.validate(-0)).to.eq(0);
-    expect(schema.validate(2.0)).to.eq(2);
-    expect(() => schema.validate(NaN)).to.throws('value is not allowed to be NaN');
-    expect(() => schema.validate(2.01)).to.throw(/^custom error$/);
-  });
-
-  it('`custom` should restrict by user custom function', () => {
-    const schema = racoon.number().custom((val) => {
-      if (val % 2 === 0 || val % 3 === 0) {
-        return true;
-      }
-      throw new Error('value should can be devided by 2 or 3');
+      expect(schema.validate(0.1)).to.eq(0.1);
+      expect(() => schema.validate(NaN)).to.throw('value is not allowed to be NaN');
+      expect(() => schema.validate(Infinity)).to.throw('value is not allowed to be Infinity');
+      expect(() => schema.validate(-Infinity)).to.throw('value is not allowed to be Infinity');
+      expect(() => schema.validate('abc')).to.throw('value should be a type of number');
     });
-    expect(schema.validate(4)).to.eq(4);
-    expect(schema.validate(9)).to.eq(9);
-    expect(() => schema.validate(5)).to.throw('value should can be devided by 2 or 3');
+
+    it('with custom error', () => {
+      const schema = racoon.number().error('custom error');
+
+      expect(schema.validate(0.1)).to.eq(0.1);
+      expect(() => schema.validate(NaN)).to.throw('custom error');
+      expect(() => schema.validate(Infinity)).to.throw('custom error');
+      expect(() => schema.validate('abc')).to.throw('custom error');
+    });
   });
 
-  it('`custom` should restrict by user custom function and accept custom error', () => {
-    const schema = racoon.number().custom((val) => {
-      if (val % 2 === 0 || val % 3 === 0) {
-        return true;
-      }
-      throw new Error('value should can be devided by 2 or 3');
-    })
-      .error('custom error');
-    expect(schema.validate(4)).to.eq(4);
-    expect(schema.validate(9)).to.eq(9);
-    expect(() => schema.validate(5)).to.throw(/^custom error$/);
+  describe('`min` should restrict the min value of number', () => {
+    it('should deny non-number param', () => {
+      expect(() => racoon.number().min('abc')).to.throw('`min` should be a type of number');
+    });
+
+    it('closed interval', () => {
+      const schema = racoon.number().min(1);
+
+      expect(schema.validate(1)).to.eq(1);
+      expect(schema.validate(2)).to.eq(2);
+      expect(() => schema.validate(0)).to.throw('value should be greater than or equal to 1');
+    });
+
+    it('opened interval', () => {
+      const schema = racoon.number().min(1, false);
+
+      expect(schema.validate(2)).to.eq(2);
+      expect(() => schema.validate(1)).to.throw('value should be greater than 1');
+    });
+
+    describe('should accept custom error', () => {
+      it('closed interval', () => {
+        const schema = racoon
+          .number()
+          .min(1)
+          .error('custom error');
+
+        expect(schema.validate(1)).to.eq(1);
+        expect(schema.validate(2)).to.eq(2);
+        expect(() => schema.validate(0)).to.throw('custom error');
+      });
+
+      it('opened interval', () => {
+        const schema2 = racoon
+          .number()
+          .min(1, false)
+          .error('custom error');
+
+        expect(schema2.validate(2)).to.eq(2);
+        expect(() => schema2.validate(1)).to.throw('custom error');
+      });
+    });
   });
 
-  it('`default` should deny empty arguments', () => {
-    expect(() => racoon.number().default()).to.throw('`default` args can not be empty');
+  describe('`max` should restrict the max value of number', () => {
+    it('should deny non-number param', () => {
+      expect(() => racoon.number().max('abc')).to.throw('`max` should be a type of number');
+    });
+
+    it('closed interval', () => {
+      const schema = racoon.number().max(1);
+
+      expect(schema.validate(1)).to.eq(1);
+      expect(schema.validate(0)).to.eq(0);
+      expect(() => schema.validate(2)).to.throw('value should be less than or equal to 1');
+    });
+
+    it('opened interval', () => {
+      const schema = racoon.number().max(1, false);
+
+      expect(schema.validate(0)).to.eq(0);
+      expect(() => schema.validate(1)).to.throw('value should be less than 1');
+    });
+
+    describe('should accept custom error', () => {
+      it('closed interval', () => {
+        const schema = racoon
+          .number()
+          .max(1)
+          .error('custom error');
+
+        expect(schema.validate(1)).to.eq(1);
+        expect(schema.validate(0)).to.eq(0);
+        expect(() => schema.validate(2)).to.throw('custom error');
+      });
+
+      it('opened interval', () => {
+        const schema2 = racoon
+          .number()
+          .max(1, false)
+          .error('custom error');
+
+        expect(schema2.validate(0)).to.eq(0);
+        expect(() => schema2.validate(1)).to.throw('custom error');
+      });
+    });
   });
 
-  it('`default` should make a default return when value is undefined/null/NaN', () => {
-    const schema1 = racoon.number().default(100);
-    expect(schema1.validate()).to.eq(100);
-    expect(schema1.validate(undefined)).to.eq(100);
-    expect(schema1.validate(null)).to.eq(100);
-    expect(schema1.validate(0)).to.eq(0);
-    expect(() => schema1.validate(NaN)).to.throw('value is not allowed to be NaN');
+  describe('`required` should restrict value to be required', () => {
+    it('without custom error', () => {
+      const schema = racoon.number().required();
 
-    const schema2 = racoon.number().allowNaN()
-      .default(100);
-    expect(schema2.validate()).to.eq(100);
-    expect(schema2.validate(undefined)).to.eq(100);
-    expect(schema2.validate(null)).to.eq(100);
-    expect(schema2.validate(NaN)).to.eq(100);
-    expect(schema2.validate(0)).to.eq(0);
+      expect(schema.validate(1)).to.eq(1);
+      expect(() => schema.validate()).to.throw('value is required and should not be undefined/null');
+      expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null');
+      expect(() => schema.validate(NaN)).to.throw('value is not allowed to be NaN');
+    });
+
+    it('with custom error', () => {
+      const schema = racoon
+        .number()
+        .required()
+        .error('custom error');
+
+      expect(schema.validate(1)).to.eq(1);
+      expect(() => schema.validate()).to.throw('custom error');
+      expect(() => schema.validate(null)).to.throw('custom error');
+      expect(() => schema.validate(NaN)).to.throw('value is not allowed to be NaN');
+    });
   });
 
-  it('`format` should set return value formatter', () => {
-    const schema1 = racoon.number().format(num => num * 2);
-    expect(schema1.validate(1)).to.be.eq(2);
-    expect(schema1.validate(3)).to.be.eq(6);
-    expect(schema1.validate(undefined)).to.be.NaN;
+  describe('`custom` should restrict number by a custom function', () => {
+    it('should deny non-function param', () => {
+      expect(() => racoon.number().custom([])).to.throw('`restrictFn` should be a type of function');
+    });
 
-    const schema2 = racoon.number().default(5)
-      .format(num => num * 2);
-    expect(schema2.validate(1)).to.be.eq(2);
-    expect(schema2.validate(3)).to.be.eq(6);
-    expect(schema2.validate()).to.be.eq(10);
-    expect(schema2.validate(undefined)).to.be.eq(10);
-    expect(schema2.validate(null)).to.be.eq(10);
-    expect(() => schema2.validate(NaN)).to.throw('value is not allowed to be NaN');
+    it('can throw an error', () => {
+      const schema = racoon
+        .number()
+        .custom((val) => {
+          if (val % 2 === 0) {
+            throw new Error('custom error');
+          }
+        });
 
-    const schema3 = racoon.number().allowNaN()
-      .default(5)
-      .format(num => num * 2);
-    expect(schema3.validate(undefined)).to.be.eq(10);
-    expect(schema3.validate(null)).to.be.eq(10);
-    expect(schema3.validate(NaN)).to.be.eq(10);
+      expect(schema.validate(1)).to.eq(1);
+      expect(() => schema.validate(2)).to.throw('custom error');
+    });
+
+    it('can return a non-empty string', () => {
+      const schema = racoon
+        .number()
+        .custom((val) => {
+          if (val % 2 === 0) {
+            return 'custom error';
+          }
+        });
+
+      expect(schema.validate(1)).to.eq(1);
+      expect(() => schema.validate(2)).to.throw('custom error');
+    });
+
+    it('can accept custom error too', () => {
+      const schema = racoon
+        .number()
+        .custom((val) => {
+          if (val % 2 === 0) {
+            return 'custom error';
+          }
+        })
+        .error('custom error 2');
+
+      expect(schema.validate(1)).to.deep.eq(1);
+      expect(() => schema.validate(2)).to.throw('custom error 2');
+    });
   });
 
-  it('complex scene 1', () => {
-    const schema = racoon.number().min(-1)
-      .max(1, false)
-      .required();
-    expect(schema.validate(-1)).to.eq(-1);
-    expect(schema.validate(0)).to.eq(0);
-    expect(() => schema.validate(1)).to.throw('value should less than 1');
-    expect(() => schema.validate(-2)).to.throw('value should greater than or equal -1');
-    expect(() => schema.validate()).to.throw('value is required and should not be undefined/null');
+  describe('`enum` should restrict enum type', () => {
+    it('should deny empty arguments', () => {
+      expect(() => racoon.number().enum()).to.throw('enum arguments should not be empty');
+    });
+
+    it('without custom error', () => {
+      const schema = racoon.number().enum(1, 2, 3);
+
+      expect(schema.validate(1)).to.eq(1);
+      expect(() => schema.validate(4)).to.throw('value should be one of [1,2,3]');
+    });
+
+    it('with custom error', () => {
+      const schema = racoon
+        .number()
+        .enum(1, 2, 3)
+        .error('custom error');
+
+      expect(schema.validate(3)).to.eq(3);
+      expect(() => schema.validate(4)).to.throw('custom error');
+    });
   });
 
-  it('complex scene 2', () => {
-    const schema = racoon.number().max(1, false)
-      .required()
-      .min(-1);
-    expect(schema.validate(-1)).to.eq(-1);
-    expect(schema.validate(0)).to.eq(0);
-    expect(() => schema.validate(1)).to.throw('value should less than 1');
-    expect(() => schema.validate(-2)).to.throw('value should greater than or equal -1');
-    expect(() => schema.validate()).to.throw('value is required and should not be undefined/null');
+  describe('`int` should restrict number to be an intgeter', () => {
+    it('without custom error', () => {
+      const schema = racoon.number().int();
+
+      expect(schema.validate(1)).to.eq(1);
+      expect(() => schema.validate(1.1)).to.throw('value should be an integer');
+    });
+
+    it('with custom error', () => {
+      const schema = racoon
+        .number()
+        .int()
+        .error('custom error');
+
+      expect(schema.validate(1)).to.eq(1);
+      expect(() => schema.validate(1.1)).to.throw('custom error');
+    });
   });
 
-  it('complex scene 3', () => {
-    const schema1 = racoon.number().min(-1)
-      .max(1, false);
-    expect(schema1.validate(undefined)).to.undefined;
-    expect(schema1.validate(null)).to.be.null;
-    expect(schema1.validate(null)).to.be.null;
-    expect(schema1.validate(-1)).to.eq(-1);
-    expect(schema1.validate(0)).to.eq(0);
-    expect(() => schema1.validate(NaN)).to.throw('value is not allowed to be NaN');
-    expect(() => schema1.validate(1)).to.throw('value should less than 1');
-    expect(() => schema1.validate(-2)).to.throw('value should greater than or equal -1');
+  describe('`default` should make an default return when value is emtpy', () => {
+    it('should deny empty arguments', () => {
+      expect(() => racoon.number().default()).to.throw('default arguments should not be empty');
+    });
 
-    const schema2 = racoon.number().allowNaN();
-    expect(schema2.validate(NaN)).to.be.NaN;
+    it('should make an default return val', () => {
+      const schema = racoon.number().default(10);
+
+      expect(schema.validate(undefined)).to.eq(10);
+      expect(schema.validate(null)).to.eq(10);
+      expect(() => schema.validate(NaN)).to.throw('value is not allowed to be NaN');
+
+      schema.allowNaN();
+      expect(schema.validate(NaN)).to.eq(10);
+    });
   });
 
-  it('complex scene 4', () => {
+  describe('`format` should format the final return value', () => {
+    it('should deny empty non-function param', () => {
+      expect(() => racoon.number().format(1)).to.throw('`formatter` should be a type of function');
+    });
+
+    it('without default return value', () => {
+      const schema = racoon.number().format(val => String(val) + 1);
+
+      expect(schema.validate(null)).to.eq('null1');
+      expect(schema.validate(1)).to.eq('11');
+    });
+
+    it('with default return value', () => {
+      const schema = racoon
+        .number()
+        .default(1)
+        .format(val => val + 1);
+
+      expect(schema.validate(null)).to.eq(2);
+      expect(schema.validate(10)).to.eq(11);
+    });
+  });
+
+  describe('`allowNaN` should make number allow NaN', () => {
+    it('without required', () => {
+      const schema = racoon.number().allowNaN();
+
+      expect(schema.validate(1)).to.eq(1);
+      expect(schema.validate(NaN)).to.be.NaN;
+    });
+
+    it('with required', () => {
+      const schema = racoon
+        .number()
+        .allowNaN()
+        .required();
+      const errorMsg = 'value is required and should not be undefined/null';
+
+      expect(schema.validate(1)).to.eq(1);
+      expect(() => schema.validate(NaN)).to.throw('value is required and should not be NaN');
+      expect(() => schema.validate()).to.throw(errorMsg);
+      expect(() => schema.validate(null)).to.throw(errorMsg);
+    });
+  });
+
+  describe('`allowInfinity` should make number allow Infinity', () => {
+    it('without required', () => {
+      const schema = racoon.number().allowInfinity();
+
+      expect(schema.validate(Infinity)).to.eq(Infinity);
+      expect(schema.validate(-Infinity)).to.eq(-Infinity);
+    });
+
+    it('with required', () => {
+      const schema = racoon
+        .number()
+        .allowInfinity()
+        .required();
+
+      expect(schema.validate(Infinity)).to.eq(Infinity);
+      expect(schema.validate(-Infinity)).to.eq(-Infinity);
+    });
+  });
+
+  describe('`allowString` should make number schema preparse string', () => {
+    const errorMsg = 'value should be a type of number';
+
+    it('empty string or string only includes white spaces', () => {
+      const schema = racoon.number().allowString();
+
+      expect(() => schema.validate('')).to.throw(errorMsg);
+      expect(() => schema.validate('  ')).to.throw(errorMsg);
+    });
+
+    it('string exceeds max number', () => {
+      const schema = racoon.number().allowString();
+
+      const string = '9'.repeat(99999);
+      expect(() => schema.validate(string)).to.throw('value is not allowed to be Infinity');
+
+      schema.allowInfinity();
+      expect(schema.validate(string)).to.eq(Infinity);
+    });
+
+    it('string unparsable', () => {
+      const schema = racoon.number().allowString();
+
+      expect(() => schema.validate('abc')).to.throw(errorMsg);
+
+      schema.allowNaN();
+      // Number schema doesn't parse non-number like string.
+      expect(() => schema.validate('abc')).to.throw(errorMsg);
+    });
+  });
+
+  it('`error` should add custom error to the right restrict', () => {
     const schema = racoon
       .number()
       .error('error1')
-      .int()
+      .min(1)
       .error('error2')
-      .min(0, false)
+      .max(10, false)
       .error('error3')
-      .max(10, true)
+      .int()
       .error('error4')
-      .custom((val) => {
-        if (val === 10) {
-          throw new Error('value can not be 10');
-        }
-        return true;
-      })
-      .error('error5')
-      .enum(1, 2, 3, 5, 10)
-      .error('error6')
-      .allowNaN()
-      .required(true)
-      .error('error7');
+      .required()
+      .error('error5');
 
     expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate(3)).to.eq(3);
-    expect(() => schema.validate('1.0')).to.throw('error1');
-    expect(() => schema.validate(2.2)).to.throw('error2');
-    expect(() => schema.validate(-1)).to.throw('error3');
-    expect(() => schema.validate(11)).to.throw('error4');
-    expect(() => schema.validate(10)).to.throw('error5');
-    expect(() => schema.validate(6)).to.throw('error6');
-    expect(() => schema.validate(null)).to.throw('error7');
+    expect(schema.validate(9)).to.eq(9);
+    expect(() => schema.validate('abc')).to.throw('error1');
+    expect(() => schema.validate(0)).to.throw('error2');
+    expect(() => schema.validate(10)).to.throw('error3');
+    expect(() => schema.validate(1.2)).to.throw('error4');
+    expect(() => schema.validate(null)).to.throw('error5');
   });
 
-  it('complex scene 5', () => {
+  it('`errorForAll` should add custom error to all restricts when restrict has\'t custom error', () => {
     const schema = racoon
       .number()
       .error('error1')
+      .min(1)
+      .max(10, false)
+      .error('error3')
       .int()
-      .error('error2')
-      .min(0, false)
-      .max(10, true)
-      .custom((val) => {
-        if (val === 10) {
-          throw new Error('value can not be 10');
-        }
-        return true;
-      })
+      .required()
       .error('error5')
-      .enum(1, 2, 3, 5, 10)
-      .allowNaN()
-      .required(true)
-      .error('error7')
       .errorForAll('error for all');
 
     expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate(3)).to.eq(3);
-    expect(() => schema.validate('1.0')).to.throw('error1');
-    expect(() => schema.validate(2.2)).to.throw('error2');
-    expect(() => schema.validate(-1)).to.throw('error for all');
-    expect(() => schema.validate(11)).to.throw('error for all');
-    expect(() => schema.validate(10)).to.throw('error5');
-    expect(() => schema.validate(6)).to.throw('error for all');
-    expect(() => schema.validate(null)).to.throw('error7');
+    expect(schema.validate(9)).to.eq(9);
+    expect(() => schema.validate('abc')).to.throw('error1');
+    expect(() => schema.validate(0)).to.throw('error for all');
+    expect(() => schema.validate(10)).to.throw('error3');
+    expect(() => schema.validate(1.2)).to.throw('error for all');
+    expect(() => schema.validate(null)).to.throw('error5');
+  });
+
+  it('`error` and `errorForAll` should accept message as a callback', () => {
+    const obj = {
+      getMessage(message) {
+        return this.getMessagePrivate(message);
+      },
+      getMessagePrivate(message) {
+        return `PREFIX ${message}`;
+      },
+    };
+    const schema = racoon
+      .number()
+      .error(obj.getMessage, obj)
+      .min(1)
+      .max(10, false)
+      .error(obj.getMessage, obj)
+      .int()
+      .required()
+      .error('error5')
+      .errorForAll(obj.getMessage, obj);
+
+    expect(schema.validate(1)).to.eq(1);
+    expect(schema.validate(9)).to.eq(9);
+    expect(() => schema.validate('abc')).to.throw('PREFIX value should be a type of number');
+    expect(() => schema.validate(0)).to.throw('PREFIX value should be greater than or equal to 1');
+    expect(() => schema.validate(1.2)).to.throw('PREFIX value should be an integer');
   });
 });

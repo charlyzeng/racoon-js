@@ -1,98 +1,202 @@
 import { expect } from 'chai';
 import racoon from '../lib';
 
-describe('`boolean` function test', () => {
-  it('should restrict the basic type', () => {
+describe('schema#boolean', () => {
+  it('should restrict the detected value to be a type of boolean', () => {
     const schema = racoon.boolean();
+
     expect(schema.validate(true)).to.be.true;
     expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(1)).to.throw('value should be typeof boolean');
+    expect(() => schema.validate(1)).to.throw('value should be a type of boolean');
   });
 
-  it('should restrict the basic type and accept custom error', () => {
+  it('should can accept custom error', () => {
     const schema = racoon.boolean().error('custom error');
+
     expect(schema.validate(true)).to.be.true;
     expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(1)).to.throw(/^custom error$/);
+    expect(() => schema.validate(1)).to.throw('custom error');
   });
 
-  it('`enum` should restrict the enum type', () => {
-    const schema = racoon.boolean().enum(false);
-    expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(true)).to.throw('value should be one of [false]');
-  });
-
-  it('`enum` should restrict the enum type and accept custom error', () => {
-    const schema = racoon.boolean().enum(false)
-      .error('custom error');
-    expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(true)).to.throw(/^custom error$/);
-  });
-
-  it('`default` should deny empty arguments', () => {
-    expect(() => racoon.boolean().default()).to.throw('`default` args can not be empty');
-  });
-
-  it('`default` should make a default return when value is undefined/null', () => {
-    const schema = racoon.boolean().default(true);
-    expect(schema.validate()).to.be.true;
-    expect(schema.validate(undefined)).to.be.true;
-    expect(schema.validate(null)).to.be.true;
-    expect(schema.validate(false)).to.be.false;
-    expect(schema.validate(true)).to.be.true;
-  });
-
-  it('`custom` should restrict by user custom function', () => {
-    const schema = racoon.boolean().custom((val) => {
-      if (val === false) {
-        return true;
-      }
-      throw new Error('value should can be false');
+  describe('`enum` should restrict enum type', () => {
+    it('should deny empty arguments', () => {
+      expect(() => racoon.boolean().enum()).to.throw('enum arguments should not be empty');
     });
-    expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(true)).to.throw('value should can be false');
+
+    it('without custom error', () => {
+      const schema = racoon.boolean().enum(false);
+
+      expect(schema.validate(false)).to.be.false;
+      expect(() => schema.validate(true)).to.throw('value should be one of [false]');
+    });
+
+    it('with custom error', () => {
+      const schema = racoon
+        .boolean()
+        .enum(false)
+        .error('custom error');
+
+      expect(schema.validate(false)).to.be.false;
+      expect(() => schema.validate(true)).to.throw('custom error');
+    });
   });
 
-  it('complex scene 1', () => {
-    const schema = racoon.boolean().required();
-    expect(schema.validate(true)).to.be.true;
-    expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(undefined)).to.throw('value is required and should not be undefined/null');
-    expect(() => schema.validate(null)).to.throw('value is required and should not be undefined/null');
+  describe('`required` should restrict boolean to be required', () => {
+    it('without custom error', () => {
+      const schema = racoon.boolean().required();
+      const errorMsg = 'value is required and should not be undefined/null';
+
+      expect(schema.validate(false)).to.be.false;
+      expect(schema.validate(true)).to.be.true;
+      expect(() => schema.validate(undefined)).to.throw(errorMsg);
+      expect(() => schema.validate(null)).to.throw(errorMsg);
+    });
+
+    it('with custom error', () => {
+      const schema = racoon
+        .boolean()
+        .required()
+        .error('custom error');
+
+      expect(schema.validate(false)).to.be.false;
+      expect(schema.validate(true)).to.be.true;
+      expect(() => schema.validate(undefined)).to.throw('custom error');
+      expect(() => schema.validate(null)).to.throw('custom error');
+    });
   });
 
-  it('complex scene 2', () => {
-    const schema = racoon.boolean().required()
-      .error('custom error');
-    expect(schema.validate(true)).to.be.true;
-    expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(undefined)).to.throw(/^custom error$/);
-    expect(() => schema.validate(null)).to.throw(/^custom error$/);
+  describe('`custom` should restrict value by a custom function', () => {
+    it('should deny non-function param', () => {
+      expect(() => racoon.boolean().custom([])).to.throw('`restrictFn` should be a type of function');
+    });
+
+    it('`restrictFn` can throw an error', () => {
+      const schema = racoon
+        .boolean()
+        .custom((val) => {
+          if (val !== true) {
+            throw new Error('error by throw');
+          }
+        });
+
+      expect(schema.validate(true)).to.be.true;
+      expect(() => schema.validate(false)).to.throw('error by throw');
+    });
+
+    it('`restrictFn` can return a non-empty string', () => {
+      const schema = racoon
+        .boolean()
+        .custom((val) => {
+          if (val !== true) {
+            return 'error by return';
+          }
+        });
+
+      expect(schema.validate(true)).to.be.true;
+      expect(() => schema.validate(false)).to.throw('error by return');
+    });
+
+    it('can accept custom error too', () => {
+      const schema = racoon
+        .boolean()
+        .custom((val) => {
+          if (val !== true) {
+            return 'error by return';
+          }
+        })
+        .error('error by custom');
+
+      expect(schema.validate(true)).to.be.true;
+      expect(() => schema.validate(false)).to.throw('error by custom');
+    });
   });
 
-  it('complex scene 3', () => {
+  describe('`default` should make an default return when value is emtpy', () => {
+    it('should deny empty arguments', () => {
+      expect(() => racoon.boolean().default()).to.throw('default arguments should not be empty');
+    });
+
+    it('should make an default return val', () => {
+      const schema = racoon.boolean().default(true);
+
+      expect(schema.validate()).to.be.true;
+      expect(schema.validate(undefined)).to.be.true;
+      expect(schema.validate(null)).to.be.true;
+      expect(schema.validate(false)).to.be.false;
+      expect(schema.validate(true)).to.be.true;
+    });
+  });
+
+  describe('`format` should format the final return value', () => {
+    it('should deny empty non-function param', () => {
+      expect(() => racoon.boolean().format(1)).to.throw('`formatter` should be a type of function');
+    });
+
+    it('without default return value', () => {
+      const schema = racoon.boolean().format(val => String(val) + 1);
+
+      expect(schema.validate(null)).to.eq('null1');
+      expect(schema.validate(true)).to.eq('true1');
+    });
+
+    it('with default return value', () => {
+      const schema = racoon
+        .boolean()
+        .default(true)
+        .format(val => String(val) + 1);
+
+      expect(schema.validate(null)).to.eq('true1');
+      expect(schema.validate(true)).to.eq('true1');
+    });
+  });
+
+  it('`error` should add custom error to the right restrict', () => {
     const schema = racoon
       .boolean()
+      .enum(true)
       .error('error1')
       .required()
       .error('error2');
-    expect(schema.validate(true)).to.be.true;
-    expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(1)).to.throw(/^error1$/);
-    expect(() => schema.validate(null)).to.throw(/^error2$/);
+
+    expect(schema.validate(true)).to.be.eq(true);
+    expect(() => schema.validate(false)).to.throw('error1');
+    expect(() => schema.validate(null)).to.throw('error2');
   });
 
-  it('complex scene 4', () => {
+  it('`errorForAll` should add custom error to all restricts when restrict has\'t custom error', () => {
     const schema = racoon
       .boolean()
-      .error('error1')
       .enum(true)
+      .error('error1')
       .required()
-      .error('error2')
       .errorForAll('error for all');
-    expect(schema.validate(true)).to.be.true;
-    expect(() => schema.validate(1)).to.throw(/^error1$/);
-    expect(() => schema.validate(null)).to.throw(/^error2$/);
-    expect(() => schema.validate(false)).to.throw('error for all');
+
+    expect(schema.validate(true)).to.be.eq(true);
+    expect(() => schema.validate(false)).to.throw('error1');
+    expect(() => schema.validate(null)).to.throw('error for all');
+  });
+
+  it('`error` and `errorForAll` should accept message as a callback', () => {
+    const obj = {
+      getMessage(message) {
+        return this.getMessagePrivate(message);
+      },
+      getMessagePrivate(message) {
+        return `PREFIX ${message}`;
+      },
+    };
+    const schema = racoon
+      .boolean()
+      .enum(true)
+      .error(obj.getMessage, obj)
+      .required()
+      .errorForAll(obj.getMessage, obj);
+
+    const errorMsg1 = 'PREFIX value should be one of [true]';
+    const errorMsg2 = 'PREFIX value is required and should not be undefined/null';
+
+    expect(schema.validate(true)).to.be.eq(true);
+    expect(() => schema.validate(false)).to.throw(errorMsg1);
+    expect(() => schema.validate(null)).to.throw(errorMsg2);
   });
 });

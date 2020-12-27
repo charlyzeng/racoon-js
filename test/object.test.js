@@ -1,134 +1,167 @@
 import { expect } from 'chai';
 import racoon from '../lib';
 
-describe('`object` function test', () => {
-  it('should restrict the basic type', () => {
-    const schema = racoon.object();
-    expect(schema.validate()).to.be.undefined;
-    expect(schema.validate(null)).to.be.null;
-    expect(schema.validate({})).to.deep.eq({});
-    expect(() => schema.validate(1)).to.throw('value should be typeof object');
-    expect(() => schema.validate(Promise.resolve())).to.throw('value should be typeof object');
-    expect(() => schema.validate(() => {})).to.throw('value should be typeof object');
+describe('schema#object', () => {
+  describe('should restrict the detected value to be a type of object', () => {
+    it('without custom error', () => {
+      const schema = racoon.object();
+
+      expect(schema.validate({ a: 1 })).to.deep.eq({ a: 1 });
+      expect(schema.validate(null)).to.be.null;
+      expect(schema.validate(undefined)).to.be.undefined;
+      expect(() => schema.validate(1)).to.throw('value should be a type of object');
+      expect(() => schema.validate([])).to.throw('value should be a type of object');
+    });
+
+    it('with custom error', () => {
+      const schema = racoon.object().error('custom error');
+
+      expect(() => schema.validate([])).to.throw('custom error');
+    });
   });
 
-  it('`config` should ignore non-schema prop', () => {
+  it('`config` should ignore non-schema props', () => {
     const schema = racoon.object({
       name: String,
       age: racoon.number(),
     });
+
     expect(() => schema.validate({ name: 'Tom', age: 22 })).to.throw('the key `name` is not allowed');
   });
 
-  it('should restrict the basic type and accept custom error', () => {
-    const schema = racoon.object().error('custom error');
-    expect(schema.validate()).to.be.undefined;
-    expect(schema.validate(null)).to.be.null;
-    expect(schema.validate({})).to.deep.eq({});
-    expect(() => schema.validate(1)).to.throw(/^custom error$/);
-    expect(() => schema.validate(Promise.resolve())).to.throw(/^custom error$/);
-    expect(() => schema.validate(() => {})).to.throw(/^custom error$/);
-  });
+  describe('`custom` should restrict object by a custom function', () => {
+    const errorMsg = 'object should has include name and age';
 
-  it('should restrict the basic type and accept custom error and error for all', () => {
-    const schema = racoon
-      .object()
-      .custom((obj) => {
-        if (Object.keys(obj).length === 1) {
-          return true;
-        }
-        throw new Error('custom error');
-      })
-      .error('custom error')
-      .errorForAll('error for all');
-    expect(schema.validate()).to.be.undefined;
-    expect(schema.validate(null)).to.be.null;
-    expect(() => schema.validate({})).to.throw(/^custom error$/);
-    expect(() => schema.validate(1)).to.throw(/^error for all$/);
-  });
+    it('can throw an error', () => {
+      const schema = racoon
+        .object()
+        .custom((obj) => {
+          if (!obj.name || !obj.age) {
+            throw new Error(errorMsg);
+          }
+        });
 
-  it('`default` should make a default return when value is undefined/null/empty', () => {
-    const schema1 = racoon.object().default(() => ({ a: 1 }));
-    expect(schema1.validate()).to.deep.eq({ a: 1 });
-    expect(schema1.validate(undefined)).to.deep.eq({ a: 1 });
-    expect(schema1.validate(null)).to.deep.eq({ a: 1 });
-    expect(schema1.validate({})).to.deep.eq({});
-    expect(schema1.validate({ a: 2 })).to.deep.eq({ a: 2 });
-    expect(() => schema1.validate(NaN)).to.throw('value should be typeof object');
-
-    const schema2 = racoon.object().default(() => ({ a: 1 }), true);
-    expect(schema2.validate()).to.deep.eq({ a: 1 });
-    expect(schema2.validate(undefined)).to.deep.eq({ a: 1 });
-    expect(schema2.validate(null)).to.deep.eq({ a: 1 });
-    expect(schema2.validate({})).to.deep.eq({ a: 1 });
-    expect(schema2.validate({ a: 2 })).to.deep.eq({ a: 2 });
-  });
-
-  it('`defualt` should work for nested property', () => {
-    const schema = racoon.object({
-      name: racoon.string().default(''),
-      age: racoon.number().default(1),
-      gender: racoon.boolean().default(true),
-      friends: racoon.array().default(() => ['Tom', 'Jack']),
-      book: racoon.object().default(() => ({ title: 'book title' })),
+      expect(schema.validate({ name: 'Jack', age: 20 })).to.deep.eq({ name: 'Jack', age: 20 });
+      expect(() => schema.validate({ name: 'Jack' })).to.throw(errorMsg);
     });
-    expect(schema.validate({})).deep.eq({
-      name: '',
-      age: 1,
-      gender: true,
-      friends: ['Tom', 'Jack'],
-      book: {
-        title: 'book title',
-      },
+
+    it('can return a non-empty string', () => {
+      const schema = racoon
+        .object()
+        .custom((obj) => {
+          if (!obj.name || !obj.age) {
+            throw new Error(errorMsg);
+          }
+        });
+
+      expect(schema.validate({ name: 'Jack', age: 20 })).to.deep.eq({ name: 'Jack', age: 20 });
+      expect(() => schema.validate({ name: 'Jack' })).to.throw(errorMsg);
+    });
+
+    it('can accept custom error too', () => {
+      const schema = racoon
+        .object()
+        .custom((obj) => {
+          if (!obj.name || !obj.age) {
+            throw new Error(errorMsg);
+          }
+        })
+        .error('custom error');
+
+      expect(schema.validate({ name: 'Jack', age: 20 })).to.deep.eq({ name: 'Jack', age: 20 });
+      expect(() => schema.validate({ name: 'Jack' })).to.throw('custom error');
     });
   });
 
-  it('`format` should set return value formatter', () => {
-    const schema1 = racoon.object().default({ c: 'c' })
-      .format(value => ({ code: 100, value }));
-    expect(schema1.validate({ a: 1, b: 2 })).to.deep.eq({ code: 100, value: { a: 1, b: 2 } });
-    expect(schema1.validate(undefined)).to.deep.eq({ code: 100, value: { c: 'c' } });
-    expect(schema1.validate(null)).to.deep.eq({ code: 100, value: { c: 'c' } });
-    expect(schema1.validate({})).to.deep.eq({ code: 100, value: {} });
+  describe('`required` should restrict value to be required', () => {
+    it('non-strict mode', () => {
+      const schema = racoon.object().required();
+      const errorMsg = 'value is required and should not be undefined/null';
 
-    const schema2 = racoon.object().default({ c: 'c' }, true)
-      .format(value => ({ code: 100, value }));
-    expect(schema2.validate({ a: 1, b: 2 })).to.deep.eq({ code: 100, value: { a: 1, b: 2 } });
-    expect(schema2.validate(undefined)).to.deep.eq({ code: 100, value: { c: 'c' } });
-    expect(schema2.validate(null)).to.deep.eq({ code: 100, value: { c: 'c' } });
-    expect(schema2.validate({})).to.deep.eq({ code: 100, value: { c: 'c' } });
-  });
-
-  it('`required` should work for nested property', () => {
-    const schema1 = racoon.object({
-      name: racoon.string().required(),
+      expect(schema.validate({})).to.deep.eq({});
+      expect(schema.validate({ a: 1 })).to.deep.eq({ a: 1 });
+      expect(() => schema.validate(undefined)).to.throw(errorMsg);
+      expect(() => schema.validate(null)).to.throw(errorMsg);
     });
-    expect(() => schema1.validate({ name: null })).to.throw('"name": value is required and should not be undefined/null');
-    expect(() => schema1.validate({ name: undefined })).to.throw('"name": value is required and should not be undefined/null');
-    expect(() => schema1.validate({})).to.throw('"name": value is required and should not be undefined/null');
+
+    it('strict mode', () => {
+      const schema = racoon.object().required(true);
+      const errorMsg = 'value is required and should not be empty';
+
+      expect(schema.validate({ a: 1 })).to.deep.eq({ a: 1 });
+      expect(() => schema.validate(undefined)).to.throw(errorMsg);
+      expect(() => schema.validate(null)).to.throw(errorMsg);
+      expect(() => schema.validate({})).to.throw(errorMsg);
+    });
+
+    it('should accept custom error', () => {
+      const schema = racoon
+        .object()
+        .required()
+        .error('custom error');
+
+      expect(schema.validate({ a: 1 })).to.deep.eq({ a: 1 });
+      expect(() => schema.validate(undefined)).to.throw('custom error');
+      expect(() => schema.validate(null)).to.throw('custom error');
+    });
   });
 
-  it('`required` should restrict data is required', () => {
-    const schema1 = racoon.object().required();
-    expect(schema1.validate({})).to.deep.eq({});
-    expect(() => schema1.validate(null)).to.throw('value is required and should not be undefined/null');
+  describe('`default` should make an default return when value is emtpy', () => {
+    it('non-strict mode', () => {
+      const schema = racoon.object().default(() => ({ a: 1 }));
 
-    const schema2 = racoon.object().required(true);
-    expect(() => schema2.validate({})).to.throw('value is required and should not be empty');
-    expect(schema2.validate({ a: 1 })).to.deep.eq({ a: 1 });
+      expect(schema.validate(undefined)).to.deep.eq({ a: 1 });
+      expect(schema.validate(null)).to.deep.eq({ a: 1 });
+      expect(schema.validate({})).to.deep.eq({});
+    });
+
+    it('strict mode', () => {
+      const schema = racoon.object().default(() => ({ a: 1 }), true);
+
+      expect(schema.validate(undefined)).to.deep.eq({ a: 1 });
+      expect(schema.validate(null)).to.deep.eq({ a: 1 });
+      expect(schema.validate({})).to.deep.eq({ a: 1 });
+    });
   });
 
-  it('`required` should restrict data is required and accept custom error', () => {
-    const schema1 = racoon.object().required()
-      .error('custom error 1');
-    expect(schema1.validate({})).to.deep.eq({});
-    expect(() => schema1.validate(null)).to.throw(/^custom error 1$/);
+  describe('`format` should format the final return value', () => {
+    it('without default return value', () => {
+      const schema = racoon
+        .object()
+        .format(value => ({ code: 100, value }));
 
-    const schema2 = racoon.object().required(true)
-      .error('custom error 2');
-    expect(() => schema2.validate({})).to.throw(/^custom error 2$/);
-    expect(schema2.validate({ a: 1 })).to.deep.eq({ a: 1 });
+      expect(schema.validate(undefined)).to.deep.eq({ code: 100, value: undefined });
+      expect(schema.validate(null)).to.deep.eq({ code: 100, value: null });
+      expect(schema.validate({})).to.deep.eq({ code: 100, value: {} });
+      expect(schema.validate({ a: 2 })).to.deep.eq({ code: 100, value: { a: 2 } });
+    });
+
+    it('with default non-strict return value', () => {
+      const schema = racoon
+        .object()
+        .default({ a: 1 })
+        .format(value => ({ code: 100, value }));
+
+      expect(schema.validate(undefined)).to.deep.eq({ code: 100, value: { a: 1 } });
+      expect(schema.validate(null)).to.deep.eq({ code: 100, value: { a: 1 } });
+      expect(schema.validate({})).to.deep.eq({ code: 100, value: {} });
+      expect(schema.validate({ a: 2 })).to.deep.eq({ code: 100, value: { a: 2 } });
+    });
+
+    it('with default strict return value', () => {
+      const schema = racoon
+        .object()
+        .default({ a: 1 }, true)
+        .format(value => ({ code: 100, value }));
+
+      expect(schema.validate(undefined)).to.deep.eq({ code: 100, value: { a: 1 } });
+      expect(schema.validate(null)).to.deep.eq({ code: 100, value: { a: 1 } });
+      expect(schema.validate({})).to.deep.eq({ code: 100, value: { a: 1 } });
+      expect(schema.validate({ a: 2 })).to.deep.eq({ code: 100, value: { a: 2 } });
+    });
   });
+
+  // ============== here
 
   it('scene the contains unknown field', () => {
     const schema1 = racoon.object({
@@ -329,7 +362,7 @@ describe('`object` function test', () => {
       name: 'Tom',
       age: 200,
       isDanger: true,
-    })).to.throw('"age": value should less than or equal 199');
+    })).to.throw('"age": value should be less than or equal to 199');
   });
 
   it('complex scene 2', () => {
@@ -371,7 +404,7 @@ describe('`object` function test', () => {
         name: 'Jack',
         age: 22.3,
       },
-    })).to.throw('"friend.age": value should be an int');
+    })).to.throw('"friend.age": value should be an integer');
   });
 
   it('complex scene 3', () => {
@@ -405,7 +438,7 @@ describe('`object` function test', () => {
         },
       ],
     };
-    expect(() => schema.validate(data)).to.throw('"prop1[0].prop2.prop3[1][0].prop4": value should less than 3');
+    expect(() => schema.validate(data)).to.throw('"prop1[0].prop2.prop3[1][0].prop4": value should be less than 3');
     data.prop1[0].prop2.prop3[1][0].prop4 = 2;
     const clone = JSON.parse(JSON.stringify(data));
     expect(schema.validate(data)).to.deep.eq(clone);
@@ -437,7 +470,7 @@ describe('`object` function test', () => {
         prop2: [{ prop4: 1 }, { prop4: 1.2 }],
       },
     };
-    expect(() => schema1.validate(data1)).to.throw('"prop1.prop2[1].prop4": value should be an int');
+    expect(() => schema1.validate(data1)).to.throw('"prop1.prop2[1].prop4": value should be an integer');
 
     const schema2 = racoon.object({
       prop1: racoon.object({
@@ -488,7 +521,7 @@ describe('`object` function test', () => {
       },
     };
     expect(() => schema3.validate(data3)).to.throw('error4');
-    expect(() => schema3.validate([])).to.throw('value should be typeof object');
+    expect(() => schema3.validate([])).to.throw('value should be a type of object');
     data3.prop1.prop2[0] = [];
     expect(() => schema3.validate(data3)).to.throw('error for all');
   });

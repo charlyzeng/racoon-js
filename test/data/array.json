@@ -1,0 +1,109 @@
+[
+  {
+    "index": 0,
+    "guid": "762e981f-f7c8-4e5a-bad0-a918f624de38",
+    "isActive": false,
+    "balance": "$2,572.81",
+    "picture": "http://placehold.it/32x32",
+    "age": 32,
+    "eyeColor": "green",
+    "name": "Natalia Peterson",
+    "gender": "female",
+    "company": "MAROPTIC",
+    "email": "nataliapeterson@maroptic.com",
+    "phone": "+1 (883) 599-2579",
+    "about": "Culpa deserunt in reprehenderit nostrud sit laboris voluptate ad excepteur. Esse aliqua magna eu proident magna non deserunt velit irure sunt est proident. Aute ullamco cupidatat ut commodo sint laboris magna elit ut pariatur nulla duis irure. Labore dolore excepteur Lorem cillum. Adipisicing incididunt esse consectetur aliquip officia ullamco minim eu.\r\n",
+    "registered": "2016-02-21T06:23:46 -08:00",
+    "latitude": -44.546978,
+    "longitude": 148.85809,
+    "tags": [
+      "officia",
+      "excepteur",
+      "dolor",
+      "laborum",
+      "sit",
+      "pariatur",
+      "culpa"
+    ],
+    "friends": [
+      {
+        "id": 0,
+        "name": "Francis Nicholson"
+      },
+      {
+        "id": 1,
+        "name": "Nielsen Willis"
+      },
+      {
+        "id": 2,
+        "name": "Salazar Arnold"
+      }
+    ],
+    "hometown": {
+      "province": "GuangDong",
+      "city": "ShenZhen",
+      "sightSpots": [
+        {
+          "addressName": "Front Sea",
+          "starCount": 4
+        }
+      ]
+    },
+    "greeting": "Hello, Natalia Peterson! You have 6 unread messages.",
+    "favoriteFruit": "banana"
+  },
+  {
+    "index": 0,
+    "guid": "762e981f-f7c8-4e5a-bad0-a918f624de38",
+    "isActive": false,
+    "balance": "$2,572.81",
+    "picture": "http://placehold.it/32x32",
+    "age": 10,
+    "eyeColor": "green",
+    "name": "Natalia Peterson",
+    "gender": "female",
+    "company": "MAROPTIC",
+    "email": "nataliapeterson@maroptic.com",
+    "phone": "+1 (883) 599-2579",
+    "about": "Culpa deserunt in reprehenderit nostrud sit laboris voluptate ad excepteur. Esse aliqua magna eu proident magna non deserunt velit irure sunt est proident. Aute ullamco cupidatat ut commodo sint laboris magna elit ut pariatur nulla duis irure. Labore dolore excepteur Lorem cillum. Adipisicing incididunt esse consectetur aliquip officia ullamco minim eu.\r\n",
+    "registered": "2016-02-21T06:23:46 -08:00",
+    "latitude": -44.546978,
+    "longitude": 148.85809,
+    "tags": [
+      "officia",
+      "excepteur",
+      "dolor",
+      "laborum",
+      "sit",
+      "pariatur",
+      "culpa"
+    ],
+    "friends": [
+      {
+        "id": 0,
+        "name": "Francis Nicholson"
+      },
+      {
+        "id": 1,
+        "name": "Nielsen Willis"
+      },
+      {
+        "id": 2,
+        "name": "Salazar Arnold"
+      }
+    ],
+    "hometown": {
+      "province": "GuangDong",
+      "city": "ShenZhen",
+      "area": "NanShan",
+      "sightSpots": [
+        {
+          "addressName": "Front Sea",
+          "starCount": 6
+        }
+      ]
+    },
+    "greeting": "Hello, Natalia Peterson! You have 6 unread messages.",
+    "favoriteFruit": "banana"
+  }
+]
