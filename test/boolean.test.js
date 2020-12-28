@@ -2,20 +2,28 @@ import { expect } from 'chai';
 import racoon from '../lib';
 
 describe('schema#boolean', () => {
-  it('should restrict the detected value to be a type of boolean', () => {
-    const schema = racoon.boolean();
+  describe('should restrict the detected value to be a type of boolean', () => {
+    it('without custom error', () => {
+      const schema = racoon.boolean();
 
-    expect(schema.validate(true)).to.be.true;
-    expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(1)).to.throw('value should be a type of boolean');
-  });
+      expect(schema.validate(true)).to.be.true;
+      expect(schema.validate(false)).to.be.false;
+      expect(() => schema.validate(1)).to.throw('value should be a type of boolean');
+    });
 
-  it('should can accept custom error', () => {
-    const schema = racoon.boolean().error('custom error');
+    it('with custom error', () => {
+      const schema = racoon
+        .boolean()
+        .custom((value) => {
+          if (value !== true) {
+            return 'custom error 1';
+          }
+        })
+        .error('custom error 2');
 
-    expect(schema.validate(true)).to.be.true;
-    expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(1)).to.throw('custom error');
+      expect(schema.validate(true)).to.be.true;
+      expect(() => schema.validate(false)).to.throw('custom error 2');
+    });
   });
 
   describe('`enum` should restrict enum type', () => {
@@ -65,7 +73,7 @@ describe('schema#boolean', () => {
     });
   });
 
-  describe('`custom` should restrict value by a custom function', () => {
+  describe('`custom` should restrict boolean by a custom function', () => {
     it('should deny non-function param', () => {
       expect(() => racoon.boolean().custom([])).to.throw('`restrictFn` should be a type of function');
     });

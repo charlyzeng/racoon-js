@@ -2,56 +2,64 @@ import { expect } from 'chai';
 import racoon from '../lib';
 
 describe('schema#any', () => {
-  it('should allow any type value', () => {
-    const schema = racoon.any();
-    const obj = { a: 1 };
-    const ary = [1, 2, 3];
+  describe('should accept any type of value', () => {
+    it('without custom error', () => {
+      const schema = racoon.any();
+      const obj = { a: 1 };
+      const ary = [1, 2, 3];
 
-    expect(schema.validate()).to.be.undefined;
-    expect(schema.validate(null)).to.be.null;
-    expect(schema.validate(NaN)).to.be.NaN;
-    expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate(2.2)).to.eq(2.2);
-    expect(schema.validate('abc')).to.eq('abc');
+      expect(schema.validate()).to.be.undefined;
+      expect(schema.validate(null)).to.be.null;
+      expect(schema.validate(NaN)).to.be.NaN;
+      expect(schema.validate(1)).to.eq(1);
+      expect(schema.validate(2.2)).to.eq(2.2);
+      expect(schema.validate('abc')).to.eq('abc');
 
-    // For reference type, it will return origin value.
-    expect(schema.validate(obj)).to.eq(obj);
-    expect(schema.validate(ary)).to.eq(ary);
+      // For reference type, it will return origin value.
+      expect(schema.validate(obj)).to.eq(obj);
+      expect(schema.validate(ary)).to.eq(ary);
+    });
+
+    it('with custom error', () => {
+      const schema = racoon
+        .any()
+        .custom((value) => {
+          if (value !== 1) {
+            return 'custom error 1';
+          }
+        })
+        .error('custom error 2');
+
+      expect(schema.validate(1)).to.be.eq(1);
+      expect(() => schema.validate(2)).to.throw('custom error 2');
+    });
   });
 
-  it('should accept custom error', () => {
-    const schema = racoon
-      .any()
-      .custom((value) => {
-        if (value !== 1) {
-          return 'custom error 1';
-        }
-      })
-      .error('custom error 2');
+  describe('`enum` should restrict enum type', () => {
+    it('should deny empty arguments', () => {
+      expect(() => racoon.any().enum()).to.throw('enum arguments should not be empty');
+    });
 
-    expect(schema.validate(1)).to.be.eq(1);
-    expect(() => schema.validate(2)).to.throw('custom error 2');
-  });
+    it('without custom error', () => {
+      const schema = racoon.any().enum(1, 'abc', false);
 
-  it('`enum` should restrict enum type', () => {
-    const schema = racoon.any().enum(1, 'abc', false);
+      expect(schema.validate(1)).to.eq(1);
+      expect(schema.validate('abc')).to.eq('abc');
+      expect(schema.validate(false)).to.be.false;
+      expect(() => schema.validate(3)).to.throw('value should be one of [1,"abc",false]');
+    });
 
-    expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate('abc')).to.eq('abc');
-    expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(3)).to.throw('value should be one of [1,"abc",false]');
-  });
+    it('with custom error', () => {
+      const schema = racoon
+        .any()
+        .enum(1, 'abc', false)
+        .error('custom error');
 
-  it('`enum` should restrict value by enum values and accept custom error', () => {
-    const schema = racoon
-      .any()
-      .enum(1, 'abc', false)
-      .error('custom error');
-
-    expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate('abc')).to.eq('abc');
-    expect(schema.validate(false)).to.be.false;
-    expect(() => schema.validate(3)).to.throw(/^custom error$/);
+      expect(schema.validate(1)).to.eq(1);
+      expect(schema.validate('abc')).to.eq('abc');
+      expect(schema.validate(false)).to.be.false;
+      expect(() => schema.validate(3)).to.throw(/^custom error$/);
+    });
   });
 
   describe('`required` should restrict value to be required', () => {

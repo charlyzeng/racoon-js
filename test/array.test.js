@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import racoon from '../lib';
-import { getArray } from './mock';
+import { getArray } from './data/mock';
 
 describe('schema#array', () => {
   describe('should restrict the detected value to be a type of array', () => {
@@ -91,6 +91,10 @@ describe('schema#array', () => {
 
   describe('`custom` should restrict array by a custom function', () => {
     const errorMsg = 'value should starts with "ab"';
+
+    it('should deny non-function param', () => {
+      expect(() => racoon.array().custom([])).to.throw('`restrictFn` should be a type of function');
+    });
 
     it('can throw an error', () => {
       const schema = racoon
@@ -223,6 +227,10 @@ describe('schema#array', () => {
   });
 
   describe('`default` should make an default return when value is emtpy', () => {
+    it('should deny empty arguments', () => {
+      expect(() => racoon.array().default()).to.throw('default arguments should not be empty');
+    });
+
     it('non-strict mode', () => {
       const schema = racoon.array().default(() => [1, 2]);
 
@@ -246,6 +254,10 @@ describe('schema#array', () => {
   });
 
   describe('`format` should format the final return value', () => {
+    it('should deny empty non-function param', () => {
+      expect(() => racoon.array().format(1)).to.throw('`formatter` should be a type of function');
+    });
+
     it('without default return value', () => {
       const schema = racoon
         .array()
