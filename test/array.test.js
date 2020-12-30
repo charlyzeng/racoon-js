@@ -294,6 +294,10 @@ describe('schema#array', () => {
     });
   });
 
+  it('`error` should deny non-function and non-string param', () => {
+    expect(() => racoon.array().error(1)).throw('`message` should be a type of string or function');
+  });
+
   it('`error` should add custom error to the right restrict', () => {
     const schema = racoon
       .array()
@@ -311,6 +315,20 @@ describe('schema#array', () => {
     expect(() => schema.validate([1, 2, 3, 4])).to.throw('error3');
     expect(() => schema.validate(null)).to.throw('error4');
     expect(() => schema.validate([])).to.throw('error4');
+  });
+
+  it('`error` message should trim key chain prefix', () => {
+    const numberSchema = racoon.number().min(2);
+    const schema = racoon.array(numberSchema);
+
+    expect(() => schema.validate([3, 1])).to.throw('"[1]": value should be greater than or equal to 2');
+
+    numberSchema.error('custom error');
+    expect(() => schema.validate([3, 1])).to.throw(/^custom error$/);
+  });
+
+  it('`errorForAll` should deny non-function and non-string param', () => {
+    expect(() => racoon.array().errorForAll(1)).throw('`message` should be a type of string or function');
   });
 
   it('`errorForAll` should add custom error to all restricts when restrict has\'t custom error', () => {
@@ -357,5 +375,22 @@ describe('schema#array', () => {
     expect(() => schema.validate([1, 2, 3, 4])).to.throw('PREFIX value length should be less than or equal to 3');
     expect(() => schema.validate(null)).to.throw('value is required and should not be empty');
     expect(() => schema.validate([])).to.throw('value is required and should not be empty');
+  });
+
+  describe('`validateSilent` should work', () => {
+    const schema = racoon.array().min(2);
+
+    it('has error', () => {
+      const { error } = schema.validateSilent([1]);
+
+      expect(error.message).to.eq('value length should be greater than or equal to 2');
+    });
+
+    it('has no error', () => {
+      const { error, value } = schema.validateSilent([1, 2]);
+
+      expect(error).to.be.undefined;
+      expect(value).to.deep.eq([1, 2]);
+    });
   });
 });

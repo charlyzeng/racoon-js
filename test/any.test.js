@@ -230,6 +230,10 @@ describe('schema#any', () => {
     });
   });
 
+  it('`error` should deny non-function and non-string param', () => {
+    expect(() => racoon.any().error(1)).throw('`message` should be a type of string or function');
+  });
+
   it('`error` should add custom error to the right restrict', () => {
     const schema = racoon
       .any()
@@ -248,6 +252,10 @@ describe('schema#any', () => {
     expect(() => schema.validate(5)).to.throw('error1');
     expect(() => schema.validate(2)).to.throw('error2');
     expect(() => schema.validate(null)).to.throw('error3');
+  });
+
+  it('`errorForAll` should deny non-function and non-string param', () => {
+    expect(() => racoon.any().errorForAll(1)).throw('`message` should be a type of string or function');
   });
 
   it('`errorForAll` should add custom error to all restricts when restrict has\'t custom error', () => {
@@ -298,5 +306,22 @@ describe('schema#any', () => {
     expect(() => schema.validate(2)).to.throw('error2');
     expect(() => schema.validate(null)).to.throw('PREFIX value is required and should not be empty');
     expect(() => schema.validate(5)).to.throw('PREFIX value should be one of [1,2,3]');
+  });
+
+  describe('`validateSilent` should work', () => {
+    const schema = racoon.any().enum(123);
+
+    it('has error', () => {
+      const { error } = schema.validateSilent(12);
+
+      expect(error.message).to.eq('value should be one of [123]');
+    });
+
+    it('has no error', () => {
+      const { error, value } = schema.validateSilent(123);
+
+      expect(error).to.be.undefined;
+      expect(value).to.eq(123);
+    });
   });
 });

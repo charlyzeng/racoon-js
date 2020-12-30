@@ -334,6 +334,10 @@ describe('schema#number', () => {
     });
   });
 
+  it('`error` should deny non-function and non-string param', () => {
+    expect(() => racoon.number().error(1)).throw('`message` should be a type of string or function');
+  });
+
   it('`error` should add custom error to the right restrict', () => {
     const schema = racoon
       .number()
@@ -354,6 +358,10 @@ describe('schema#number', () => {
     expect(() => schema.validate(10)).to.throw('error3');
     expect(() => schema.validate(1.2)).to.throw('error4');
     expect(() => schema.validate(null)).to.throw('error5');
+  });
+
+  it('`errorForAll` should deny non-function and non-string param', () => {
+    expect(() => racoon.number().errorForAll(1)).throw('`message` should be a type of string or function');
   });
 
   it('`errorForAll` should add custom error to all restricts when restrict has\'t custom error', () => {
@@ -402,5 +410,22 @@ describe('schema#number', () => {
     expect(() => schema.validate('abc')).to.throw('PREFIX value should be a type of number');
     expect(() => schema.validate(0)).to.throw('PREFIX value should be greater than or equal to 1');
     expect(() => schema.validate(1.2)).to.throw('PREFIX value should be an integer');
+  });
+
+  describe('`validateSilent` should work', () => {
+    const schema = racoon.number().min(2);
+
+    it('has error', () => {
+      const { error } = schema.validateSilent(1);
+
+      expect(error.message).to.eq('value should be greater than or equal to 2');
+    });
+
+    it('has no error', () => {
+      const { error, value } = schema.validateSilent(2);
+
+      expect(error).to.be.undefined;
+      expect(value).to.eq(2);
+    });
   });
 });
