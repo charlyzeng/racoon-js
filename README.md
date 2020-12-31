@@ -10,7 +10,7 @@ The easiest to use and powerful data validate and formatter library for JS.
 [![npm downloads](https://img.shields.io/npm/dm/racoon-js.svg?style=flat-square)](http://npm-stat.com/charts.html?package=racoon-js)
 
 ## Table Of Contents
-- [API Document](https://racoon-js.gitbook.io/en)
+- [API Document](/doc/API.md)
 - [Features](#features)
 - [Browser Support](#browser-support)
 - [Installing](#installing)
