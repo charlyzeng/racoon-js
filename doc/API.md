@@ -1,3 +1,5 @@
+## [中文](API-ZH.md)
+
 - [number()](#number)
   - [int()](#int)
   - [min(limit, [closed=true])](#minlimit-closedtrue)
