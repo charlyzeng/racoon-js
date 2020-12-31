@@ -10,7 +10,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/racoon-js.svg?style=flat-square)](http://npm-stat.com/charts.html?package=racoon-js)
 
 ## Table Of Contents
-- [API文档](https://racoon-js.gitbook.io/zh)
+- [API文档](/doc/API-ZH.md)
 - [特性](#特性)
 - [浏览器支持](#浏览器支持)
 - [安装](#安装)
