@@ -14,7 +14,7 @@ module.exports = {
     },
   },
   extends: [
-    '@tencent/eslint-config-tencent',
+    'eslint-config-tencent',
   ],
   rules: {
     indent: 'error',
