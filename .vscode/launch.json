@@ -15,8 +15,6 @@
       "args": [
         "-r",
         "@babel/register",
-        "-g",
-        "string unparsable",
         "test/**/*.test.js"
       ]
     }

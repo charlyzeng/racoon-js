@@ -54,7 +54,7 @@ export interface SchemaArray extends SchemaBase<any[]> {
 }
 
 export interface SchemaBoolean extends SchemaBase<boolean> {
-  default(value: DefaultCallback<boolean> | any, ctx?: any);
+  default(value: DefaultCallback<boolean> | any, ctx?: any): this;
   
   required(): this;
 
@@ -62,7 +62,7 @@ export interface SchemaBoolean extends SchemaBase<boolean> {
 }
 
 export interface SchemaNumber extends SchemaBase<number> {
-  default(value: DefaultCallback<number> | any, ctx?: any);
+  default(value: DefaultCallback<number> | any, ctx?: any): this;
 
   required(): this;
 
@@ -97,6 +97,8 @@ export interface SchemaString extends SchemaBase<string> {
   pattern(pattern: RegExp): this;
 }
 
+export interface SchemaMixed extends SchemaBase {}
+
 export function any(): SchemaAny;
 
 export function array(config?: ArrayConfig): SchemaArray;
@@ -109,4 +111,6 @@ export function object(config?: ObjectConfig): SchemaObject;
 
 export function string(): SchemaString;
 
-export type Schema = SchemaAny | SchemaArray | SchemaBoolean | SchemaNumber | SchemaObject | SchemaString;
+export function mixed(): SchemaMixed;
+
+export type Schema = SchemaAny | SchemaArray | SchemaBoolean | SchemaNumber | SchemaObject | SchemaString | SchemaMixed;
