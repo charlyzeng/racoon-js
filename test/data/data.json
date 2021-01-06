@@ -28,15 +28,18 @@
     "friends": [
       {
         "id": 0,
-        "name": "Francis Nicholson"
+        "name": "Francis Nicholson",
+        "first name": "Francis"
       },
       {
         "id": 1,
-        "name": "Nielsen Willis"
+        "name": "Nielsen Willis",
+        "first name": "Nielsen"
       },
       {
         "id": 2,
-        "name": "Salazar Arnold"
+        "name": "Salazar Arnold",
+        "first name": "Salazar"
       }
     ],
     "hometown": {
@@ -81,15 +84,18 @@
     "friends": [
       {
         "id": 0,
-        "name": "Francis Nicholson"
+        "name": "Francis Nicholson",
+        "first name": "Francis"
       },
       {
         "id": 1,
-        "name": "Nielsen Willis"
+        "name": "Nielsen Willis",
+        "first name": "Nielsen"
       },
       {
         "id": 2,
-        "name": "Salazar Arnold"
+        "name": "Salazar Arnold",
+        "first name": "Salazar"
       }
     ],
     "hometown": {

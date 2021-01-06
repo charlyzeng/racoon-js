@@ -284,75 +284,92 @@ describe('schema#object', () => {
     });
   });
 
-  it('`error` should deny non-function and non-string param', () => {
-    expect(() => racoon.object().error(1)).throw('`message` should be a type of string or function');
-  });
+  describe('custom error should work', () => {
+    describe('`errror` should work', () => {
+      it('should deny non-function and non-string param', () => {
+        expect(() => racoon.object().error(1)).throw('`message` should be a type of string or function');
+      });
 
-  it('`error` should add custom error to the right restrict', () => {
-    const schema = racoon
-      .object({
-        name: racoon.string().error('innner error'),
-      })
-      .error('error1')
-      .required()
-      .error('error2');
+      it('should add custom error to the right restrict', () => {
+        const schema = racoon
+          .object({
+            name: racoon.string().error('innner error'),
+          })
+          .error('error1')
+          .required()
+          .error('error2');
 
-    expect(() => schema.validate(9)).to.throw('error1');
-    expect(() => schema.validate(null)).to.throw('error2');
-    expect(() => schema.validate({ name: 1 })).to.throw(/^innner error$/);
-  });
+        expect(() => schema.validate(9)).to.throw('error1');
+        expect(() => schema.validate(null)).to.throw('error2');
+        expect(() => schema.validate({ name: 1 })).to.throw(/^innner error$/);
+      });
 
-  it('`error` message should trim key chain prefix', () => {
-    const nameSchema = racoon
-      .string()
-      .required(true);
-    const schema = racoon.object({
-      hometown: racoon.object({
-        name: nameSchema,
-      }),
+      it('error message should trim key chain prefix', () => {
+        const nameSchema = racoon
+          .string()
+          .required(true);
+        const schema = racoon.object({
+          hometown: racoon.object({
+            name: nameSchema,
+          }),
+        });
+        const mockData = getObject(0, ['hometown']);
+
+        expect(() => schema.validate(mockData)).to.throw('"hometown.name": value is required and should not be empty');
+
+        nameSchema.error('custom error');
+        expect(() => schema.validate(mockData)).to.throw(/^custom error$/);
+      });
     });
-    const mockData = getObject(0, ['hometown']);
 
-    expect(() => schema.validate(mockData)).to.throw('"hometown.name": value is required and should not be empty');
+    describe('`errorForAll` should work', () => {
+      it('should deny non-function and non-string param', () => {
+        expect(() => racoon.object().errorForAll(1)).throw('`message` should be a type of string or function');
+      });
 
-    nameSchema.error('custom error');
-    expect(() => schema.validate(mockData)).to.throw(/^custom error$/);
-  });
+      it('should add custom error to all restricts when restrict has\'t custom error', () => {
+        const schema = racoon
+          .object()
+          .error('error1')
+          .required(true)
+          .errorForAll('error for all');
 
-  it('`errorForAll` should deny non-function and non-string param', () => {
-    expect(() => racoon.object().errorForAll(1)).throw('`message` should be a type of string or function');
-  });
+        expect(() => schema.validate(9)).to.throw('error1');
+        expect(() => schema.validate(null)).to.throw('error for all');
+        expect(() => schema.validate({})).to.throw('error for all');
+      });
+    });
 
-  it('`errorForAll` should add custom error to all restricts when restrict has\'t custom error', () => {
-    const schema = racoon
-      .object()
-      .error('error1')
-      .required(true)
-      .errorForAll('error for all');
+    it('`error` and `errorForAll` should accept message as a callback', () => {
+      const obj = {
+        getMessage(message) {
+          return this.getMessagePrivate(message);
+        },
+        getMessagePrivate(message) {
+          return `PREFIX ${message}`;
+        },
+      };
+      const schema = racoon
+        .object()
+        .error(obj.getMessage, obj)
+        .required(true)
+        .errorForAll(obj.getMessage, obj);
 
-    expect(() => schema.validate(9)).to.throw('error1');
-    expect(() => schema.validate(null)).to.throw('error for all');
-    expect(() => schema.validate({})).to.throw('error for all');
-  });
+      expect(() => schema.validate(1)).to.throw('PREFIX value should be a type of object');
+      expect(() => schema.validate(null)).to.throw('PREFIX value is required and should not be empty');
+      expect(() => schema.validate({})).to.throw('PREFIX value is required and should not be empty');
+    });
 
-  it('`error` and `errorForAll` should accept message as a callback', () => {
-    const obj = {
-      getMessage(message) {
-        return this.getMessagePrivate(message);
-      },
-      getMessagePrivate(message) {
-        return `PREFIX ${message}`;
-      },
-    };
-    const schema = racoon
-      .object()
-      .error(obj.getMessage, obj)
-      .required(true)
-      .errorForAll(obj.getMessage, obj);
+    it('error essage should be right when prop includes special chars', () => {
+      const schema = racoon.object({
+        friends: racoon.array(racoon.object({
+          'first name': racoon.string().max(3),
+        }).allowUnknown()),
+      });
+      const data = getObject(0, ['friends']);
 
-    expect(() => schema.validate(1)).to.throw('PREFIX value should be a type of object');
-    expect(() => schema.validate(null)).to.throw('PREFIX value is required and should not be empty');
-    expect(() => schema.validate({})).to.throw('PREFIX value is required and should not be empty');
+      expect(() => schema.validate(data)).to.throw('"friends[0][\'first name\']": value length should be less than or equal to 3');
+    });
   });
 
   describe('`validateSilent` should work', () => {

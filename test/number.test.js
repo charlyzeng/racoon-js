@@ -334,82 +334,88 @@ describe('schema#number', () => {
     });
   });
 
-  it('`error` should deny non-function and non-string param', () => {
-    expect(() => racoon.number().error(1)).throw('`message` should be a type of string or function');
-  });
+  describe('custom error should work', () => {
+    describe('`error` should work', () => {
+      it('`error` should deny non-function and non-string param', () => {
+        expect(() => racoon.number().error(1)).throw('`message` should be a type of string or function');
+      });
 
-  it('`error` should add custom error to the right restrict', () => {
-    const schema = racoon
-      .number()
-      .error('error1')
-      .min(1)
-      .error('error2')
-      .max(10, false)
-      .error('error3')
-      .int()
-      .error('error4')
-      .required()
-      .error('error5');
+      it('`error` should add custom error to the right restrict', () => {
+        const schema = racoon
+          .number()
+          .error('error1')
+          .min(1)
+          .error('error2')
+          .max(10, false)
+          .error('error3')
+          .int()
+          .error('error4')
+          .required()
+          .error('error5');
 
-    expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate(9)).to.eq(9);
-    expect(() => schema.validate('abc')).to.throw('error1');
-    expect(() => schema.validate(0)).to.throw('error2');
-    expect(() => schema.validate(10)).to.throw('error3');
-    expect(() => schema.validate(1.2)).to.throw('error4');
-    expect(() => schema.validate(null)).to.throw('error5');
-  });
+        expect(schema.validate(1)).to.eq(1);
+        expect(schema.validate(9)).to.eq(9);
+        expect(() => schema.validate('abc')).to.throw('error1');
+        expect(() => schema.validate(0)).to.throw('error2');
+        expect(() => schema.validate(10)).to.throw('error3');
+        expect(() => schema.validate(1.2)).to.throw('error4');
+        expect(() => schema.validate(null)).to.throw('error5');
+      });
+    });
 
-  it('`errorForAll` should deny non-function and non-string param', () => {
-    expect(() => racoon.number().errorForAll(1)).throw('`message` should be a type of string or function');
-  });
+    describe('`errorForAll` should work', () => {
+      it('`errorForAll` should deny non-function and non-string param', () => {
+        expect(() => racoon.number().errorForAll(1)).throw('`message` should be a type of string or function');
+      });
 
-  it('`errorForAll` should add custom error to all restricts when restrict has\'t custom error', () => {
-    const schema = racoon
-      .number()
-      .error('error1')
-      .min(1)
-      .max(10, false)
-      .error('error3')
-      .int()
-      .required()
-      .error('error5')
-      .errorForAll('error for all');
+      it('`errorForAll` should add custom error to all restricts when restrict has\'t custom error', () => {
+        const schema = racoon
+          .number()
+          .error('error1')
+          .min(1)
+          .max(10, false)
+          .error('error3')
+          .int()
+          .required()
+          .error('error5')
+          .errorForAll('error for all');
 
-    expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate(9)).to.eq(9);
-    expect(() => schema.validate('abc')).to.throw('error1');
-    expect(() => schema.validate(0)).to.throw('error for all');
-    expect(() => schema.validate(10)).to.throw('error3');
-    expect(() => schema.validate(1.2)).to.throw('error for all');
-    expect(() => schema.validate(null)).to.throw('error5');
-  });
+        expect(schema.validate(1)).to.eq(1);
+        expect(schema.validate(9)).to.eq(9);
+        expect(() => schema.validate('abc')).to.throw('error1');
+        expect(() => schema.validate(0)).to.throw('error for all');
+        expect(() => schema.validate(10)).to.throw('error3');
+        expect(() => schema.validate(1.2)).to.throw('error for all');
+        expect(() => schema.validate(null)).to.throw('error5');
+      });
+    });
 
-  it('`error` and `errorForAll` should accept message as a callback', () => {
-    const obj = {
-      getMessage(message) {
-        return this.getMessagePrivate(message);
-      },
-      getMessagePrivate(message) {
-        return `PREFIX ${message}`;
-      },
-    };
-    const schema = racoon
-      .number()
-      .error(obj.getMessage, obj)
-      .min(1)
-      .max(10, false)
-      .error(obj.getMessage, obj)
-      .int()
-      .required()
-      .error('error5')
-      .errorForAll(obj.getMessage, obj);
+    it('`error` and `errorForAll` should accept message as a callback', () => {
+      const obj = {
+        getMessage(message) {
+          return this.getMessagePrivate(message);
+        },
+        getMessagePrivate(message) {
+          return `PREFIX ${message}`;
+        },
+      };
+      const schema = racoon
+        .number()
+        .error(obj.getMessage, obj)
+        .min(1)
+        .max(10, false)
+        .error(obj.getMessage, obj)
+        .int()
+        .required()
+        .error('error5')
+        .errorForAll(obj.getMessage, obj);
 
-    expect(schema.validate(1)).to.eq(1);
-    expect(schema.validate(9)).to.eq(9);
-    expect(() => schema.validate('abc')).to.throw('PREFIX value should be a type of number');
-    expect(() => schema.validate(0)).to.throw('PREFIX value should be greater than or equal to 1');
-    expect(() => schema.validate(1.2)).to.throw('PREFIX value should be an integer');
+      expect(schema.validate(1)).to.eq(1);
+      expect(schema.validate(9)).to.eq(9);
+      expect(() => schema.validate('abc')).to.throw('PREFIX value should be a type of number');
+      expect(() => schema.validate(0)).to.throw('PREFIX value should be greater than or equal to 1');
+      expect(() => schema.validate(1.2)).to.throw('PREFIX value should be an integer');
+    });
   });
 
   describe('`validateSilent` should work', () => {

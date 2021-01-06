@@ -294,87 +294,93 @@ describe('schema#array', () => {
     });
   });
 
-  it('`error` should deny non-function and non-string param', () => {
-    expect(() => racoon.array().error(1)).throw('`message` should be a type of string or function');
-  });
+  describe('custom error should work', () => {
+    describe('`error` should work', () => {
+      it('`error` should deny non-function and non-string param', () => {
+        expect(() => racoon.array().error(1)).throw('`message` should be a type of string or function');
+      });
 
-  it('`error` should add custom error to the right restrict', () => {
-    const schema = racoon
-      .array()
-      .error('error1')
-      .min(2)
-      .error('error2')
-      .max(3)
-      .error('error3')
-      .required(true)
-      .error('error4');
+      it('`error` should add custom error to the right restrict', () => {
+        const schema = racoon
+          .array()
+          .error('error1')
+          .min(2)
+          .error('error2')
+          .max(3)
+          .error('error3')
+          .required(true)
+          .error('error4');
 
-    expect(schema.validate([1, 2])).to.deep.eq([1, 2]);
-    expect(() => schema.validate({})).to.throw('error1');
-    expect(() => schema.validate([1])).to.throw('error2');
-    expect(() => schema.validate([1, 2, 3, 4])).to.throw('error3');
-    expect(() => schema.validate(null)).to.throw('error4');
-    expect(() => schema.validate([])).to.throw('error4');
-  });
+        expect(schema.validate([1, 2])).to.deep.eq([1, 2]);
+        expect(() => schema.validate({})).to.throw('error1');
+        expect(() => schema.validate([1])).to.throw('error2');
+        expect(() => schema.validate([1, 2, 3, 4])).to.throw('error3');
+        expect(() => schema.validate(null)).to.throw('error4');
+        expect(() => schema.validate([])).to.throw('error4');
+      });
 
-  it('`error` message should trim key chain prefix', () => {
-    const numberSchema = racoon.number().min(2);
-    const schema = racoon.array(numberSchema);
+      it('`error` message should trim key chain prefix', () => {
+        const numberSchema = racoon.number().min(2);
+        const schema = racoon.array(numberSchema);
 
-    expect(() => schema.validate([3, 1])).to.throw('"[1]": value should be greater than or equal to 2');
+        expect(() => schema.validate([3, 1])).to.throw('"[1]": value should be greater than or equal to 2');
 
-    numberSchema.error('custom error');
-    expect(() => schema.validate([3, 1])).to.throw(/^custom error$/);
-  });
+        numberSchema.error('custom error');
+        expect(() => schema.validate([3, 1])).to.throw(/^custom error$/);
+      });
+    });
 
-  it('`errorForAll` should deny non-function and non-string param', () => {
-    expect(() => racoon.array().errorForAll(1)).throw('`message` should be a type of string or function');
-  });
+    describe('`errorForAll` should work', () => {
+      it('`errorForAll` should deny non-function and non-string param', () => {
+        expect(() => racoon.array().errorForAll(1)).throw('`message` should be a type of string or function');
+      });
 
-  it('`errorForAll` should add custom error to all restricts when restrict has\'t custom error', () => {
-    const schema = racoon
-      .array()
-      .error('error1')
-      .min(2)
-      .error('error2')
-      .max(3)
-      .error('error3')
-      .required(true)
-      .errorForAll('error for all');
+      it('`errorForAll` should add custom error to all restricts when restrict has\'t custom error', () => {
+        const schema = racoon
+          .array()
+          .error('error1')
+          .min(2)
+          .error('error2')
+          .max(3)
+          .error('error3')
+          .required(true)
+          .errorForAll('error for all');
 
-    expect(schema.validate([1, 2])).to.deep.eq([1, 2]);
-    expect(() => schema.validate({})).to.throw('error1');
-    expect(() => schema.validate([1])).to.throw('error2');
-    expect(() => schema.validate([1, 2, 3, 4])).to.throw('error3');
-    expect(() => schema.validate(null)).to.throw('error for all');
-    expect(() => schema.validate([])).to.throw('error for all');
-  });
+        expect(schema.validate([1, 2])).to.deep.eq([1, 2]);
+        expect(() => schema.validate({})).to.throw('error1');
+        expect(() => schema.validate([1])).to.throw('error2');
+        expect(() => schema.validate([1, 2, 3, 4])).to.throw('error3');
+        expect(() => schema.validate(null)).to.throw('error for all');
+        expect(() => schema.validate([])).to.throw('error for all');
+      });
+    });
 
-  it('`error` and `errorForAll` should accept message as a callback', () => {
-    const obj = {
-      getMessage(message) {
-        return this.getMessagePrivate(message);
-      },
-      getMessagePrivate(message) {
-        return `PREFIX ${message}`;
-      },
-    };
-    const schema = racoon
-      .array()
-      .error('error1')
-      .min(2)
-      .error('error2')
-      .max(3)
-      .error(obj.getMessage, obj)
-      .required(true)
-      .errorForAll(obj.getMessage, obj);
+    it('`error` and `errorForAll` should accept message as a callback', () => {
+      const obj = {
+        getMessage(message) {
+          return this.getMessagePrivate(message);
+        },
+        getMessagePrivate(message) {
+          return `PREFIX ${message}`;
+        },
+      };
+      const schema = racoon
+        .array()
+        .error('error1')
+        .min(2)
+        .error('error2')
+        .max(3)
+        .error(obj.getMessage, obj)
+        .required(true)
+        .errorForAll(obj.getMessage, obj);
 
-    expect(schema.validate([1, 2])).to.deep.eq([1, 2]);
-    expect(() => schema.validate({})).to.throw('error1');
-    expect(() => schema.validate([1])).to.throw('error2');
-    expect(() => schema.validate([1, 2, 3, 4])).to.throw('PREFIX value length should be less than or equal to 3');
-    expect(() => schema.validate(null)).to.throw('value is required and should not be empty');
-    expect(() => schema.validate([])).to.throw('value is required and should not be empty');
+      expect(schema.validate([1, 2])).to.deep.eq([1, 2]);
+      expect(() => schema.validate({})).to.throw('error1');
+      expect(() => schema.validate([1])).to.throw('error2');
+      expect(() => schema.validate([1, 2, 3, 4])).to.throw('PREFIX value length should be less than or equal to 3');
+      expect(() => schema.validate(null)).to.throw('value is required and should not be empty');
+      expect(() => schema.validate([])).to.throw('value is required and should not be empty');
+    });
   });
 
   describe('`validateSilent` should work', () => {

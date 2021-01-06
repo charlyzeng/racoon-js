@@ -158,62 +158,68 @@ describe('schema#boolean', () => {
     });
   });
 
-  it('`error` should deny non-function and non-string param', () => {
-    expect(() => racoon.boolean().error(1)).throw('`message` should be a type of string or function');
-  });
+  describe('custom error should work', () => {
+    describe('`error` should work', () => {
+      it('`error` should deny non-function and non-string param', () => {
+        expect(() => racoon.boolean().error(1)).throw('`message` should be a type of string or function');
+      });
 
-  it('`error` should add custom error to the right restrict', () => {
-    const schema = racoon
-      .boolean()
-      .enum(true)
-      .error('error1')
-      .required()
-      .error('error2');
+      it('`error` should add custom error to the right restrict', () => {
+        const schema = racoon
+          .boolean()
+          .enum(true)
+          .error('error1')
+          .required()
+          .error('error2');
 
-    expect(schema.validate(true)).to.be.eq(true);
-    expect(() => schema.validate(false)).to.throw('error1');
-    expect(() => schema.validate(null)).to.throw('error2');
-  });
+        expect(schema.validate(true)).to.be.eq(true);
+        expect(() => schema.validate(false)).to.throw('error1');
+        expect(() => schema.validate(null)).to.throw('error2');
+      });
+    });
 
-  it('`errorForAll` should deny non-function and non-string param', () => {
-    expect(() => racoon.boolean().errorForAll(1)).throw('`message` should be a type of string or function');
-  });
+    describe('`errorForAll` should work', () => {
+      it('`errorForAll` should deny non-function and non-string param', () => {
+        expect(() => racoon.boolean().errorForAll(1)).throw('`message` should be a type of string or function');
+      });
 
-  it('`errorForAll` should add custom error to all restricts when restrict has\'t custom error', () => {
-    const schema = racoon
-      .boolean()
-      .enum(true)
-      .error('error1')
-      .required()
-      .errorForAll('error for all');
+      it('`errorForAll` should add custom error to all restricts when restrict has\'t custom error', () => {
+        const schema = racoon
+          .boolean()
+          .enum(true)
+          .error('error1')
+          .required()
+          .errorForAll('error for all');
 
-    expect(schema.validate(true)).to.be.eq(true);
-    expect(() => schema.validate(false)).to.throw('error1');
-    expect(() => schema.validate(null)).to.throw('error for all');
-  });
+        expect(schema.validate(true)).to.be.eq(true);
+        expect(() => schema.validate(false)).to.throw('error1');
+        expect(() => schema.validate(null)).to.throw('error for all');
+      });
+    });
 
-  it('`error` and `errorForAll` should accept message as a callback', () => {
-    const obj = {
-      getMessage(message) {
-        return this.getMessagePrivate(message);
-      },
-      getMessagePrivate(message) {
-        return `PREFIX ${message}`;
-      },
-    };
-    const schema = racoon
-      .boolean()
-      .enum(true)
-      .error(obj.getMessage, obj)
-      .required()
-      .errorForAll(obj.getMessage, obj);
+    it('`error` and `errorForAll` should accept message as a callback', () => {
+      const obj = {
+        getMessage(message) {
+          return this.getMessagePrivate(message);
+        },
+        getMessagePrivate(message) {
+          return `PREFIX ${message}`;
+        },
+      };
+      const schema = racoon
+        .boolean()
+        .enum(true)
+        .error(obj.getMessage, obj)
+        .required()
+        .errorForAll(obj.getMessage, obj);
 
-    const errorMsg1 = 'PREFIX value should be one of [true]';
-    const errorMsg2 = 'PREFIX value is required and should not be undefined/null';
+      const errorMsg1 = 'PREFIX value should be one of [true]';
+      const errorMsg2 = 'PREFIX value is required and should not be undefined/null';
 
-    expect(schema.validate(true)).to.be.eq(true);
-    expect(() => schema.validate(false)).to.throw(errorMsg1);
-    expect(() => schema.validate(null)).to.throw(errorMsg2);
+      expect(schema.validate(true)).to.be.eq(true);
+      expect(() => schema.validate(false)).to.throw(errorMsg1);
+      expect(() => schema.validate(null)).to.throw(errorMsg2);
+    });
   });
 
   describe('`validateSilent` should work', () => {
