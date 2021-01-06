@@ -1,11 +1,15 @@
 const path = require('path');
+const { merge } = require('webpack-merge');
 
-module.exports = {
+const commonConfig = {
   mode: 'production',
+  devtool: 'source-map',
   entry: './lib/index.js',
   output: {
-    filename: 'racoon.js',
     path: path.resolve(__dirname, 'dist'),
+    libraryTarget: 'umd',
+    library: 'racoon',
+    globalObject: 'this',
   },
   module: {
     rules: [
@@ -16,3 +20,22 @@ module.exports = {
     ],
   },
 };
+
+module.exports = [
+  // For browser using by `<script src="xxx"></script>`
+  merge(commonConfig, {
+    output: {
+      filename: 'racoon.min.js',
+    },
+  }),
+
+  // For nodejs or browser useing by webpack.
+  merge(commonConfig, {
+    output: {
+      filename: 'racoon.js',
+    },
+    optimization: {
+      minimize: false,
+    },
+  }),
+];
