@@ -1,25 +1,7 @@
 {
   "name": "racoon-js",
-  "version": "1.3.9",
+  "version": "1.4.0",
   "description": "The easiest to use and powerful data validate and formatter library for JS.",
-  "main": "dist/racoon.umd.js",
-  "module": "dist/racoon.esm.js",
-  "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "karma": "karma start",
-    "karma:watch": "cross-env WATCH=true karma start",
-    "test": "mocha --require @babel/register test/**/*.test.js",
-    "cover": "nyc --reporter text npm test",
-    "build": "webpack",
-    "coveralls": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "prepublishOnly": "npm run build",
-    "preversion": "npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/charlyzeng/racoon-js.git"
-  },
   "keywords": [
     "validate",
     "validation",
@@ -28,12 +10,44 @@
     "clean",
     "racoon"
   ],
-  "author": "charlyzeng <chenglezeng@tencent.com>",
-  "license": "MIT",
+  "homepage": "https://github.com/charlyzeng/racoon-js#readme",
   "bugs": {
     "url": "https://github.com/charlyzeng/racoon-js/issues"
   },
-  "homepage": "https://github.com/charlyzeng/racoon-js#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charlyzeng/racoon-js.git"
+  },
+  "license": "MIT",
+  "author": "charlyzeng <chenglezeng@tencent.com>",
+  "main": "dist/racoon.umd.js",
+  "module": "dist/racoon.esm.js",
+  "scripts": {
+    "build": "webpack",
+    "cover": "nyc --reporter text npm test",
+    "coveralls": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "karma": "karma start",
+    "karma:watch": "cross-env WATCH=true karma start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepublishOnly": "npm run build",
+    "test": "mocha --require @babel/register test/**/*.test.js",
+    "preversion": "npm run build"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "npm run lint:fix"
+    ],
+    "package.json": [
+      "sort-package-json"
+    ]
+  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.10.5",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
@@ -68,19 +82,5 @@
     "webpack": "^4.44.2",
     "webpack-cli": "^4.3.1",
     "webpack-merge": "^5.7.3"
-  },
-  "dependencies": {},
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,ts}": [
-      "npm run lint:fix"
-    ],
-    "package.json": [
-      "sort-package-json"
-    ]
   }
 }
