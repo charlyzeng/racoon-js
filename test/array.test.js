@@ -100,7 +100,8 @@ describe('schema#array', () => {
       const schema = racoon
         .array()
         .custom((array) => {
-          if (array.join('').startsWith('ab') === false) {
+          // Do not use `Array.prototype.includes`, it doesn't compact with ie11.
+          if (array.join('').indexOf('ab') !== 0) {
             throw new Error(errorMsg);
           }
         });
@@ -113,7 +114,7 @@ describe('schema#array', () => {
       const schema = racoon
         .array()
         .custom((array) => {
-          if (array.join('').startsWith('ab') === false) {
+          if (array.join('').indexOf('ab') !== 0) {
             return errorMsg;
           }
         });
@@ -126,7 +127,7 @@ describe('schema#array', () => {
       const schema = racoon
         .array()
         .custom((array) => {
-          if (array.join('').startsWith('ab') === false) {
+          if (array.join('').indexOf('ab') !== 0) {
             throw new Error(errorMsg);
           }
         })

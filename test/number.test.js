@@ -316,7 +316,13 @@ describe('schema#number', () => {
     it('string exceeds max number', () => {
       const schema = racoon.number().allowString();
 
-      const string = '9'.repeat(99999);
+      let string = '';
+
+      // Do not use `String.prototype.repeat`, it doesn't compact with ie11.
+      for (let i = 0; i < 99999; i += 1) {
+        string += '9';
+      }
+
       expect(() => schema.validate(string)).to.throw('value is not allowed to be Infinity');
 
       schema.allowInfinity();

@@ -39,6 +39,7 @@ module.exports = function (config) {
           {
             test: /\.js$/,
             use: 'babel-loader',
+            exclude: /node_modules/,
           },
         ],
       },
@@ -57,7 +58,9 @@ module.exports = function (config) {
       // post processing of browsers list
       // here you can edit the list of browsers used by karma
       postDetection(browsers) {
-        return browsers;
+        // Can not launch Edge. For detail to see the follow issue:
+        // https://github.com/MicrosoftEdge/edge-launcher/issues/23
+        return browsers.filter(browser => browser !== 'Edge');
       },
     },
 
