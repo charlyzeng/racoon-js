@@ -1,5 +1,6 @@
 const path = require('path');
 const { merge } = require('webpack-merge');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const commonConfig = {
   mode: 'production',
@@ -38,5 +39,10 @@ module.exports = [
     optimization: {
       minimize: false,
     },
+
+    // The last config should run clean.
+    plugins: [
+      new CleanWebpackPlugin(),
+    ],
   }),
 ];
