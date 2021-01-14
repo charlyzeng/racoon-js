@@ -97,7 +97,7 @@ export interface SchemaString extends SchemaBase<string> {
   pattern(pattern: RegExp): this;
 }
 
-export interface SchemaMixed extends SchemaBase {}
+export interface SchemaMixed extends SchemaBase<any> {}
 
 export function any(): SchemaAny;
 

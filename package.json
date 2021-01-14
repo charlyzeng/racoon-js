@@ -5,14 +5,16 @@
   "main": "dist/racoon.umd.js",
   "module": "dist/racoon.esm.js",
   "scripts": {
-    "lint": "eslint lib test",
-    "lint:fix": "eslint lib test --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "karma": "karma start",
     "karma:watch": "cross-env WATCH=true karma start",
     "test": "mocha --require @babel/register test/**/*.test.js",
     "cover": "nyc --reporter text npm test",
     "build": "webpack",
-    "coveralls": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "coveralls": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "prepublishOnly": "build",
+    "preversion": "build"
   },
   "repository": {
     "type": "git",
@@ -48,6 +50,7 @@
     "eslint": "^7.4.0",
     "eslint-config-tencent": "^1.0.0",
     "eslint-plugin-import": "^2.22.0",
+    "husky": "^4.3.7",
     "karma": "^5.2.3",
     "karma-chrome-launcher": "^3.1.0",
     "karma-detect-browsers": "^2.3.3",
@@ -58,11 +61,26 @@
     "karma-opera-launcher": "^1.0.0",
     "karma-safari-launcher": "^1.0.0",
     "karma-webpack": "^4.0.2",
+    "lint-staged": "^10.5.3",
     "mocha": "^8.1.0",
     "nyc": "^15.1.0",
+    "sort-package-json": "^1.48.1",
     "webpack": "^4.44.2",
     "webpack-cli": "^4.3.1",
     "webpack-merge": "^5.7.3"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "lint:fix"
+    ],
+    "package.json": [
+      "sort-package-json"
+    ]
+  }
 }

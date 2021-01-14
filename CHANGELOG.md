@@ -50,3 +50,6 @@
 
 ### 1.3.9 (Dec 20, 2020)
 - Modify `index.d.ts`.
+
+### 1.4.0 (Jan 14, 2021)
+- 1.4.0 Support `mixed` schema.
