@@ -20,8 +20,7 @@
   },
   "license": "MIT",
   "author": "charlyzeng <chenglezeng@tencent.com>",
-  "main": "dist/racoon.umd.js",
-  "module": "dist/racoon.esm.js",
+  "main": "dist/racoon.js",
   "scripts": {
     "build": "webpack",
     "cover": "nyc --reporter text npm test",
