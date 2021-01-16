@@ -209,6 +209,10 @@ describe('schema#number', () => {
 
       expect(schema.validate(1)).to.eq(1);
       expect(() => schema.validate(1.1)).to.throw('value should be an integer');
+
+      schema.allowNaN().allowInfinity();
+      expect(() => schema.validate(NaN)).to.throw('value should be an integer');
+      expect(() => schema.validate(Infinity)).to.throw('value should be an integer');
     });
 
     it('with custom error', () => {
@@ -219,6 +223,73 @@ describe('schema#number', () => {
 
       expect(schema.validate(1)).to.eq(1);
       expect(() => schema.validate(1.1)).to.throw('custom error');
+
+      schema.allowNaN().allowInfinity();
+      expect(() => schema.validate(NaN)).to.throw('custom error');
+      expect(() => schema.validate(Infinity)).to.throw('custom error');
+    });
+  });
+
+  describe('`odd` should restrict number to be odd', () => {
+    it('without custom error', () => {
+      const schema = racoon.number().odd();
+
+      expect(schema.validate(1)).to.eq(1);
+      expect(() => schema.validate(1.1)).to.throw('value should be an odd integer');
+      expect(() => schema.validate(2)).to.throw('value should be an odd integer');
+
+      schema.allowNaN().allowInfinity();
+      expect(() => schema.validate(NaN)).to.throw('value should be an odd integer');
+      expect(() => schema.validate(Infinity)).to.throw('value should be an odd integer');
+    });
+
+    it('with custom error', () => {
+      const schema = racoon
+        .number()
+        .odd()
+        .error('custom error');
+
+      expect(schema.validate(1)).to.eq(1);
+      expect(schema.validate(-1)).to.eq(-1);
+      expect(() => schema.validate(1.1)).to.throw('custom error');
+      expect(() => schema.validate(2)).to.throw('custom error');
+
+      schema.allowNaN().allowInfinity();
+      expect(() => schema.validate(NaN)).to.throw('custom error');
+      expect(() => schema.validate(Infinity)).to.throw('custom error');
+    });
+  });
+
+  describe('`even` should restrict number to be even', () => {
+    it('without custom error', () => {
+      const schema = racoon.number().even();
+
+      expect(schema.validate(2)).to.eq(2);
+      expect(schema.validate(-2)).to.eq(-2);
+      expect(schema.validate(0)).to.eq(0);
+      expect(() => schema.validate(2.2)).to.throw('value should be an even integer');
+      expect(() => schema.validate(1)).to.throw('value should be an even integer');
+
+      schema.allowNaN().allowInfinity();
+      expect(() => schema.validate(NaN)).to.throw('value should be an even integer');
+      expect(() => schema.validate(Infinity)).to.throw('value should be an even integer');
+    });
+
+    it('with custom error', () => {
+      const schema = racoon
+        .number()
+        .even()
+        .error('custom error');
+
+      expect(schema.validate(2)).to.eq(2);
+      expect(schema.validate(-2)).to.eq(-2);
+      expect(schema.validate(0)).to.eq(0);
+      expect(() => schema.validate(2.2)).to.throw('custom error');
+      expect(() => schema.validate(1)).to.throw('custom error');
+
+      schema.allowNaN().allowInfinity();
+      expect(() => schema.validate(NaN)).to.throw('custom error');
+      expect(() => schema.validate(Infinity)).to.throw('custom error');
     });
   });
 
