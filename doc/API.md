@@ -2,6 +2,8 @@
 
 - [number()](#number)
   - [int()](#int)
+  - [even()](#even)
+  - [odd()](#odd)
   - [min(limit, [closed=true])](#minlimit-closedtrue)
   - [max(limit, [closed=true])](#maxlimit-closedtrue)
   - [enum(...values)](#enumvalues)
@@ -74,6 +76,43 @@ const schema = racoon.number().int();
 schema.validate(1);   // pass
 schema.validate(1.0); // pass
 schema.validate(1.2); // fail
+```
+
+## even()
+Restrict the detected number to be an even integer.
+
+Arguments
+
+None.
+
+Example
+```javascript
+const schema = racoon.number().even();
+
+schema.validate(0);   // pass
+schema.validate(2);   // pass
+schema.validate(-2);  // pass
+schema.validate(-1);  // fail
+schema.validate(1);   // fail
+schema.validate(2.2); // fail
+```
+
+## odd()
+Restrict the detected number to be an odd integer.
+
+Arguments
+
+None.
+
+Example
+```javascript
+const schema = racoon.number().odd();
+
+schema.validate(1);   // pass
+schema.validate(-1);  // pass
+schema.validate(2);   // fail
+schema.validate(-2);  // fail
+schema.validate(1.1); // fail
 ```
 
 ## min(limit, [closed=true])

@@ -2,6 +2,8 @@
 
 - [number()](#number)
   - [int()](#int)
+  - [even()](#even)
+  - [odd()](#odd)
   - [min(min, [closed=true])](#minmin-closedtrue)
   - [max(max, [closed=true])](#maxmax-closedtrue)
   - [enum(...values)](#enumvalues)
@@ -76,6 +78,43 @@ const schema = racoon.number().int();
 schema.validate(1);   // pass
 schema.validate(1.0); // pass
 schema.validate(1.2); // fail
+```
+
+## even()
+限制被检测数值为一个偶数整数。
+
+参数
+
+无。
+
+示例
+```javascript
+const schema = racoon.number().even();
+
+schema.validate(0);   // pass
+schema.validate(2);   // pass
+schema.validate(-2);  // pass
+schema.validate(-1);  // fail
+schema.validate(1);   // fail
+schema.validate(2.2); // fail
+```
+
+## odd()
+限制被检测数值为一个奇数整数。
+
+参数
+
+无。
+
+示例
+```javascript
+const schema = racoon.number().odd();
+
+schema.validate(1);   // pass
+schema.validate(-1);  // pass
+schema.validate(2);   // fail
+schema.validate(-2);  // fail
+schema.validate(1.1); // fail
 ```
 
 ## min(min, [closed=true])

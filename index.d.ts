@@ -74,6 +74,10 @@ export interface SchemaNumber extends SchemaBase<number> {
 
   int(): this;
 
+  even(): this;
+  
+  odd(): this;
+
   allowNaN(): this;
 
   allowInfinity(): this;
