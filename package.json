@@ -1,6 +1,6 @@
 {
   "name": "racoon-js",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "The easiest to use and powerful data validate and formatter library for JS.",
   "keywords": [
     "validate",
