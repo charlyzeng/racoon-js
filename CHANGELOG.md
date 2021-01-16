@@ -52,4 +52,7 @@
 - Modify `index.d.ts`.
 
 ### 1.4.0 (Jan 14, 2021)
-- 1.4.0 Support `mixed` schema.
+- Support `mixed` schema.
+
+### 1.5.0 (Jan 16, 2021)
+- Support `even` and `odd` for number schema.
