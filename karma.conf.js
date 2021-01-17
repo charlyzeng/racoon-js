@@ -1,6 +1,11 @@
 // Karma configuration
 // Generated on Tue Jan 05 2021 17:54:02 GMT+0800 (GMT+08:00)
 
+const resolve = require('@rollup/plugin-node-resolve').default;
+const babel = require('@rollup/plugin-babel').default;
+const commonjs = require('@rollup/plugin-commonjs');
+const json = require('@rollup/plugin-json');
+
 const watch = Object.prototype.hasOwnProperty.call(process.env, 'WATCH');
 
 module.exports = function (config) {
@@ -29,20 +34,24 @@ module.exports = function (config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'test/**/*.test.js': ['webpack'],
+      'test/**/*.test.js': ['rollup'],
     },
 
-    webpack: {
-      mode: 'development',
-      module: {
-        rules: [
-          {
-            test: /\.js$/,
-            use: 'babel-loader',
-            exclude: /node_modules/,
-          },
-        ],
+    rollupPreprocessor: {
+      output: {
+        format: 'umd',
+        name: 'racoon',
+        sourcemap: 'inline',
       },
+      plugins: [
+        json(),
+        commonjs(),
+        resolve(),
+        babel({
+          exclude: 'node_modules/**',
+          babelHelpers: 'runtime',
+        }),
+      ],
     },
 
     detectBrowsers: {
