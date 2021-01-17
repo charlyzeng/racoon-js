@@ -22,8 +22,11 @@ yarn-error.log*
 **/.*
 .gitignore
 .eslintignore
-examples/
-typings/
-test/
+.travis.yml
+.nyc_output
+test
+coverage
 babel.config.js
 rollup.config.js
+karma.conf.js
+nyc.config.js
