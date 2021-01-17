@@ -69,10 +69,7 @@ module.exports = function (config) {
       postDetection(installedBrowsers) {
         // Can not launch Edge. For detail to see the follow issue:
         // https://github.com/MicrosoftEdge/edge-launcher/issues/23
-        const browsersToTest = ['Chrome', 'Firefox', 'Safari', 'Opera', 'IE'];
-
-        return installedBrowsers
-          .filter(browser => browsersToTest.includes(browser));
+        return installedBrowsers.filter(browser => browser !== 'Edge');
       },
     },
 

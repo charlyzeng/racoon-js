@@ -11,12 +11,27 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/node_modules/mocha/bin/mocha",
+      "program": "${workspaceFolder}/node_modules/.bin/mocha",
       "args": [
         "-r",
         "@babel/register",
         "test/**/*.test.js"
       ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Karma Test",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/node_modules/.bin/karma",
+      "args": [
+        "start"
+      ],
+      "env": {
+        "ROLLUP": "true"
+      }
     }
   ]
 }
