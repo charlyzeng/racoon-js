@@ -56,3 +56,6 @@
 
 ### 1.5.0 (Jan 16, 2021)
 - Support `even` and `odd` for number schema.
+
+### 1.6.0 (Jan 17, 2021)
+- Reduce the size of bundle.
