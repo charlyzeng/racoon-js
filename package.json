@@ -23,16 +23,17 @@
   "main": "dist/racoon.umd.js",
   "module": "dist/racoon.esm.js",
   "scripts": {
-    "build": "rimraf dist && cross-env ROLLUP=true rollup -c rollup.config.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "mocha --require @babel/register test/**/*.test.js",
     "cover": "nyc --reporter text npm test",
     "coveralls": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "karma": "cross-env ROLLUP=true karma start",
     "karma:watch": "cross-env WATCH=true ROLLUP=true karma start",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "prepublishOnly": "npm run build",
-    "test": "mocha --require @babel/register test/**/*.test.js",
-    "preversion": "npm run build"
+    "build": "rimraf dist && cross-env ROLLUP=true rollup -c rollup.config.js",
+    "testAndBuild": "npm test && npm run build",
+    "prepublishOnly": "npm run testAndBuild",
+    "preversion": "npm run testAndBuild"
   },
   "husky": {
     "hooks": {
