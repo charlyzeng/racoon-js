@@ -347,10 +347,6 @@ describe('schema#array', () => {
           .required(true)
           .errorForAll('error for all');
 
-        expect(schema.validate([1, 2])).to.deep.eq([1, 2]);
-        expect(() => schema.validate({})).to.throw('error1');
-        expect(() => schema.validate([1])).to.throw('error2');
-        expect(() => schema.validate([1, 2, 3, 4])).to.throw('error3');
         expect(() => schema.validate(null)).to.throw('error for all');
         expect(() => schema.validate([])).to.throw('error for all');
       });
