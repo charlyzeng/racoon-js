@@ -70,7 +70,7 @@
     "eslint-config-tencent": "^1.0.0",
     "eslint-plugin-import": "^2.22.0",
     "husky": "^4.3.7",
-    "karma": "^5.2.3",
+    "karma": "^6.3.14",
     "karma-chrome-launcher": "^3.1.0",
     "karma-detect-browsers": "^2.3.3",
     "karma-edge-launcher": "^0.4.2",
